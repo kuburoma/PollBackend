@@ -1,6 +1,7 @@
 package cz.wa2.poll.backend.entities;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -17,9 +18,14 @@ public class Voter {
     private String email;
     private String password;
 
-    @ManyToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST}, mappedBy = "voters", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "supervisor")
+    private List<VoterGroup> supervisedGroups;
+
+    @ManyToMany(cascade = {CascadeType.ALL}, mappedBy = "voters")
     private List<VoterGroup> voterGroups;
 
+    @OneToMany(mappedBy = "voter")
+    private List<Ballot> ballots;
 
     public Long getId() {
         return id;
@@ -65,8 +71,40 @@ public class Voter {
         return voterGroups;
     }
 
+    @Transient
+    public void addVoterGroup(VoterGroup voterGroup){
+        if(this.voterGroups == null){
+            this.voterGroups = new ArrayList<VoterGroup>();
+        }
+        this.voterGroups.add(voterGroup);
+    }
+
     public void setVoterGroups(List<VoterGroup> voterGroups) {
         this.voterGroups = voterGroups;
+    }
+
+    public List<VoterGroup> getSupervisedGroups() {
+        return supervisedGroups;
+    }
+
+    public void setSupervisedGroups(List<VoterGroup> supervisedGroups) {
+        this.supervisedGroups = supervisedGroups;
+    }
+
+    @Transient
+    public void addSupervisedGroup(VoterGroup supervisedGroup){
+        if(this.supervisedGroups == null){
+            this.supervisedGroups = new ArrayList<VoterGroup>();
+        }
+        this.supervisedGroups.add(supervisedGroup);
+    }
+
+    public List<Ballot> getBallots() {
+        return ballots;
+    }
+
+    public void setBallots(List<Ballot> ballots) {
+        this.ballots = ballots;
     }
 
     @Override

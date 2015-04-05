@@ -5,6 +5,8 @@ import cz.wa2.poll.backend.dto.VoterFullDTO;
 import cz.wa2.poll.backend.entities.Poll;
 import cz.wa2.poll.backend.entities.Voter;
 import cz.wa2.poll.backend.entities.VoterGroup;
+import cz.wa2.poll.backend.exception.DaoException;
+import org.hibernate.Hibernate;
 
 import javax.persistence.*;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -19,27 +21,47 @@ public class VoterDao extends GenericDaoImpl<Voter, Long> {
         super(Voter.class);
     }
 
-    public Voter getVoterByEmail(String email){
-        em = emf.createEntityManager();
-        CriteriaBuilder cb = em.getCriteriaBuilder();
-        CriteriaQuery<Voter> q = cb.createQuery(entityClass);
-        Root<Voter> c = q.from(entityClass);
-        q.select(c);
-        q.where(cb.equal(c.get("email"), email));
-        List<Voter> voters = em.createQuery(q).getResultList();
-        if(voters.size() == 1){
-            return voters.get(0);
-        }else{
-            return null;
+    public Voter getVoterByEmail(String email) throws DaoException {
+        try {
+            em = emf.createEntityManager();
+            CriteriaBuilder cb = em.getCriteriaBuilder();
+            CriteriaQuery<Voter> q = cb.createQuery(entityClass);
+            Root<Voter> c = q.from(entityClass);
+            q.select(c);
+            q.where(cb.equal(c.get("email"), email));
+            List<Voter> voters = em.createQuery(q).getResultList();
+            if (voters.size() == 1) {
+                return voters.get(0);
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            tx.rollback();
+            throw new DaoException("Chyba při ukládání entity", e);
+        } finally {
+            em.close();
         }
     }
 
-    public void update(VoterFullDTO object) {
+    public Voter findWithVoterGroups(Long id) throws DaoException {
+        em = emf.createEntityManager();
+        try {
+            Voter object = (Voter) em.find(entityClass, id);
+            Hibernate.initialize(object.getVoterGroups());
+            return object;
+        } catch (Exception e) {
+            throw new DaoException("Chyba při VoterDao.findWithVoterGroup("+id+")", e);
+        } finally {
+            em.close();
+        }
+    }
+
+    public void update(VoterDTO object) {
         em = emf.createEntityManager();
         try {
             tx = em.getTransaction();
             tx.begin();
-            Voter entity = em.find(Voter.class,object.getId());
+            Voter entity = em.find(Voter.class, object.getId());
             entity.setFirstName(object.getFirstName());
             entity.setLastName(object.getLastName());
             entity.setEmail(object.getEmail());
@@ -49,12 +71,12 @@ public class VoterDao extends GenericDaoImpl<Voter, Long> {
         } catch (PersistenceException e) {
             tx.rollback();
             e.printStackTrace();
-        }finally {
+        } finally {
             em.close();
         }
     }
 
-    public List<Voter> ahoj(){
+    public List<Voter> ahoj() {
         em = emf.createEntityManager();
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<Voter> q = cb.createQuery(Voter.class);

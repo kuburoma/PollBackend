@@ -10,11 +10,11 @@ import javax.persistence.metamodel.StaticMetamodel;
 public abstract class VoterGroup_ {
 
 	public static volatile ListAttribute<VoterGroup, Voter> voters;
-	public static volatile SingularAttribute<VoterGroup, String> founder;
 	public static volatile SingularAttribute<VoterGroup, String> name;
 	public static volatile SingularAttribute<VoterGroup, String> description;
 	public static volatile ListAttribute<VoterGroup, Poll> polls;
 	public static volatile SingularAttribute<VoterGroup, Long> id;
+	public static volatile SingularAttribute<VoterGroup, Voter> supervisor;
 
 }
 

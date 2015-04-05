@@ -18,10 +18,10 @@ public class Poll {
     @ManyToOne(cascade = CascadeType.ALL)
     private VoterGroup voterGroup;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "poll", fetch = FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "poll")
     private List<Ballot> ballots;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.ALL)
     private List<Answer> answers;
 
     public Long getId() {
@@ -60,6 +60,7 @@ public class Poll {
         return ballots;
     }
 
+    @Transient
     public void addBallot(Ballot ballot){
         if(this.ballots == null){
             this.ballots = new ArrayList<Ballot>();
@@ -75,6 +76,7 @@ public class Poll {
         return answers;
     }
 
+    @Transient
     public void addAnswer(Answer answer){
         if(this.answers == null){
             this.answers = new ArrayList<Answer>();

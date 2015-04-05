@@ -15,7 +15,6 @@ public class Ballot {
     private Poll poll;
 
     @ManyToOne
-    @JoinColumn(name="voter_id")
     private Voter voter;
 
     @ManyToOne

@@ -1,6 +1,7 @@
 package cz.wa2.poll.backend.entities;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -13,9 +14,11 @@ public class VoterGroup {
     private Long id;
     private String name;
     private String description;
-    private String founder;
 
-    @ManyToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST}, fetch = FetchType.LAZY)
+    @ManyToOne
+    private Voter supervisor;
+
+    @ManyToMany(cascade = {CascadeType.ALL})
     @JoinTable(
             name="voter_votergroup",
             joinColumns=@JoinColumn(name="voutergroup_id"),
@@ -50,16 +53,24 @@ public class VoterGroup {
         this.description = description;
     }
 
-    public String getFounder() {
-        return founder;
+    public Voter getSupervisor() {
+        return supervisor;
     }
 
-    public void setFounder(String founder) {
-        this.founder = founder;
+    public void setSupervisor(Voter supervisor) {
+        this.supervisor = supervisor;
     }
 
     public List<Voter> getVoters() {
         return voters;
+    }
+
+    @Transient
+    public void addVoter(Voter voter){
+        if(this.voters == null){
+            this.voters = new ArrayList<Voter>();
+        }
+        this.voters.add(voter);
     }
 
     public void setVoters(List<Voter> voters) {
@@ -79,7 +90,6 @@ public class VoterGroup {
         StringBuffer sb = new StringBuffer();
         sb.append("Name: "+name+"\n");
         sb.append("Description: "+description+"\n");
-        sb.append("Founder: "+founder+"\n");
         return sb.toString();
     }
 }

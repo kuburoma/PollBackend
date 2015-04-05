@@ -1,20 +1,25 @@
 package cz.wa2.poll.backend.dto;
 
+import cz.wa2.poll.backend.entities.Voter;
+import cz.wa2.poll.backend.entities.VoterGroup;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 public class VoterGroupDTO {
 
     private Long id;
     private String name;
     private String description;
-    private String founder;
 
     public VoterGroupDTO() {
     }
 
-    public VoterGroupDTO(Long id, String name, String description, String founder) {
-        this.id = id;
-        this.name = name;
-        this.description = description;
-        this.founder = founder;
+    public VoterGroupDTO(VoterGroup voterGroup) {
+        this.id = voterGroup.getId();
+        this.name = voterGroup.getName();
+        this.description = voterGroup.getDescription();
     }
 
     public Long getId() {
@@ -41,12 +46,11 @@ public class VoterGroupDTO {
         this.description = description;
     }
 
-    public String getFounder() {
-        return founder;
-    }
-
-    public void setFounder(String founder) {
-        this.founder = founder;
+    public VoterGroup toEntity(){
+        VoterGroup voterGroup = new VoterGroup();
+        voterGroup.setName(this.getName());
+        voterGroup.setDescription(this.getDescription());
+        return voterGroup;
     }
 
     @Override
@@ -54,7 +58,6 @@ public class VoterGroupDTO {
         StringBuffer sb = new StringBuffer();
         sb.append("Name: "+name+"\n");
         sb.append("Description: "+description+"\n");
-        sb.append("Founder: "+founder+"\n");
         return sb.toString();
     }
 }

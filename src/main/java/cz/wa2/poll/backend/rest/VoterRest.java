@@ -1,17 +1,14 @@
 package cz.wa2.poll.backend.rest;
 
 import cz.wa2.poll.backend.dao.VoterDao;
+import cz.wa2.poll.backend.dao.VoterGroupDao;
+import cz.wa2.poll.backend.dto.ConvertorDTO;
 import cz.wa2.poll.backend.dto.VoterDTO;
-import cz.wa2.poll.backend.dto.VoterFullDTO;
 import cz.wa2.poll.backend.entities.Voter;
 import cz.wa2.poll.backend.exception.DaoException;
-
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 
 
 @Path("/voter")
@@ -19,17 +16,15 @@ import java.util.List;
 @Produces({MediaType.APPLICATION_JSON})
 public class VoterRest {
 
+    ConvertorDTO convertorDTO = new ConvertorDTO();
+    VoterDao vd = new VoterDao();
+    VoterGroupDao voterGroupDao = new VoterGroupDao();
+
     @GET
     public Response getVoters() {
         try {
             VoterDao vd = new VoterDao();
-            List<Voter> voters = vd.findAll();
-            List<VoterDTO> voterDTOs = new ArrayList<VoterDTO>();
-            Iterator<Voter> it = voters.iterator();
-            while (it.hasNext()) {
-                voterDTOs.add(new VoterDTO(it.next()));
-            }
-            return Response.status(Response.Status.OK).entity(voterDTOs).build();
+            return Response.status(Response.Status.OK).entity(convertorDTO.convertVoterToDTO(vd.findAll())).build();
         } catch (DaoException e) {
             e.printStackTrace();
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
@@ -40,8 +35,40 @@ public class VoterRest {
     @Path(value = "/{id}")
     public Response getVoter(@PathParam("id") Long id) {
         try {
-            VoterDao vd = new VoterDao();
             return Response.status(Response.Status.OK).entity(new VoterDTO(vd.find(id))).build();
+        } catch (DaoException e) {
+            e.printStackTrace();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @GET
+    @Path(value = "/{id}/supervised_groups")
+    public Response getSupervisedGroups(@PathParam("id") Long id) {
+        try {
+            return Response.status(Response.Status.OK).entity(convertorDTO.convertVoterGroupToDTO(voterGroupDao.getSupervisedGroups(id))).build();
+        } catch (DaoException e) {
+            e.printStackTrace();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @GET
+    @Path(value = "/{id}/registred_groups")
+    public Response getRegistredGroups(@PathParam("id") Long id) {
+        try {
+            return Response.status(Response.Status.OK).entity(convertorDTO.convertVoterGroupToDTO(voterGroupDao.getVoterGroupsWithVoter(id))).build();
+        } catch (DaoException e) {
+            e.printStackTrace();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @GET
+    @Path(value = "/{id}/notregistred_groups")
+    public Response getNotregistredGroups(@PathParam("id") Long id) {
+        try {
+            return Response.status(Response.Status.OK).entity(convertorDTO.convertVoterGroupToDTO(voterGroupDao.getVoterGroupsWithoutVoter(id))).build();
         } catch (DaoException e) {
             e.printStackTrace();
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
@@ -51,22 +78,23 @@ public class VoterRest {
     @GET
     @Path(value = "/login")
     public Response getLogin(@QueryParam("email") String email, @QueryParam("password") String password) {
-        VoterDao vd = new VoterDao();
-        Voter voter = vd.getVoterByEmail(email);
-        if (voter == null) {
-            return Response.status(Response.Status.PRECONDITION_FAILED).build();
-        }
-        if (voter.getPassword().equals(password)) {
-            return Response.status(Response.Status.OK).entity(new VoterDTO(voter)).build();
-        } else {
-            return Response.status(Response.Status.PRECONDITION_FAILED).build();
+        try {
+            Voter voter = vd.getVoterByEmail(email);
+
+            if (voter != null && voter.getPassword().equals(password)) {
+                return Response.status(Response.Status.OK).entity(new VoterDTO(voter)).build();
+            } else {
+                return Response.status(Response.Status.UNAUTHORIZED).build();
+            }
+        } catch (DaoException e) {
+            e.printStackTrace();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         }
     }
 
     @POST
-    public Response saveVoter(VoterFullDTO voter) {
+    public Response saveVoter(VoterDTO voter) {
         try {
-            VoterDao vd = new VoterDao();
             Voter voterByEmail = vd.getVoterByEmail(voter.getEmail());
             if (voterByEmail == null) {
                 return Response.status(Response.Status.OK).entity(new VoterDTO(vd.create(voter.toEntity()))).build();
@@ -80,7 +108,7 @@ public class VoterRest {
     }
 
     @PUT
-    public Response updateVoter(VoterFullDTO voter) {
+    public Response updateVoter(VoterDTO voter) {
         VoterDao vd = new VoterDao();
         vd.update(voter);
         return Response.status(Response.Status.OK).build();
