@@ -8,7 +8,7 @@ import javax.persistence.metamodel.StaticMetamodel;
 @StaticMetamodel(Ballot.class)
 public abstract class Ballot_ {
 
-	public static volatile SingularAttribute<Ballot, Answer> answer;
+	public static volatile SingularAttribute<Ballot, Long> answer;
 	public static volatile SingularAttribute<Ballot, Long> id;
 	public static volatile SingularAttribute<Ballot, Poll> poll;
 	public static volatile SingularAttribute<Ballot, Voter> voter;

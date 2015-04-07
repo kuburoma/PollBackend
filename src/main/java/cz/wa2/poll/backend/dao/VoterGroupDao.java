@@ -2,6 +2,8 @@ package cz.wa2.poll.backend.dao;
 
 import cz.wa2.poll.backend.dto.VoterDTO;
 import cz.wa2.poll.backend.dto.VoterGroupDTO;
+import cz.wa2.poll.backend.entities.Ballot;
+import cz.wa2.poll.backend.entities.Poll;
 import cz.wa2.poll.backend.entities.Voter;
 import cz.wa2.poll.backend.entities.VoterGroup;
 import cz.wa2.poll.backend.exception.DaoException;
@@ -34,7 +36,6 @@ public class VoterGroupDao extends GenericDaoImpl<VoterGroup, Long> {
             Voter supervisor = em.find(Voter.class, voterGroup.getSupervisor().getId());
             VoterGroup voterGroupSave = new VoterGroup();
             voterGroupSave.setSupervisor(supervisor);
-            voterGroupSave.addVoter(supervisor);
             voterGroupSave.setName(voterGroup.getName());
             voterGroupSave.setDescription(voterGroup.getDescription());
             em.persist(voterGroupSave);
@@ -48,12 +49,12 @@ public class VoterGroupDao extends GenericDaoImpl<VoterGroup, Long> {
         }
     }
 
-    public void removeVoter(Long id, Long voterId) throws DaoException {
+    public void removeVoter(Long votergroupId, Long voterId) throws DaoException {
         em = emf.createEntityManager();
         try {
             tx = em.getTransaction();
             tx.begin();
-            VoterGroup voterGroup = (VoterGroup) em.find(entityClass, id);
+            VoterGroup voterGroup = (VoterGroup) em.find(entityClass, votergroupId);
             Iterator<Voter> it = voterGroup.getVoters().iterator();
             while(it.hasNext()){
                 Voter v = it.next();
@@ -65,24 +66,24 @@ public class VoterGroupDao extends GenericDaoImpl<VoterGroup, Long> {
             em.merge(voterGroup);
             tx.commit();
         } catch (Exception e) {
-            throw new DaoException("Chyba při VoterGroupDao.removeVoter("+id+" ,"+voterId+")", e);
+            throw new DaoException("Chyba při VoterGroupDao.removeVoter("+votergroupId+" ,"+voterId+")", e);
         } finally {
             em.close();
         }
     }
 
-    public void putVoter(Long id, Long voterId) throws DaoException {
+    public void putVoter(Long votergroupId, Long voterId) throws DaoException {
         em = emf.createEntityManager();
         try {
             tx = em.getTransaction();
             tx.begin();
-            VoterGroup voterGroup = (VoterGroup) em.find(entityClass, id);
+            VoterGroup voterGroup = (VoterGroup) em.find(entityClass, votergroupId);
             Voter voter = em.find(Voter.class, voterId);
             voterGroup.addVoter(voter);
             em.merge(voterGroup);
             tx.commit();
         } catch (Exception e) {
-            throw new DaoException("Chyba při VoterGroupDao.putVoter("+id+" ,"+voterId+")", e);
+            throw new DaoException("Chyba při VoterGroupDao.putVoter("+votergroupId+" ,"+voterId+")", e);
         } finally {
             em.close();
         }
@@ -92,6 +93,7 @@ public class VoterGroupDao extends GenericDaoImpl<VoterGroup, Long> {
         em = emf.createEntityManager();
         try {
             VoterGroup object = (VoterGroup) em.find(entityClass, id);
+            Hibernate.initialize(object.getVoters());
             return object.getVoters();
         } catch (Exception e) {
             throw new DaoException("Chyba při VoterDao.findWithVoterGroup("+id+")", e);
@@ -118,8 +120,9 @@ public class VoterGroupDao extends GenericDaoImpl<VoterGroup, Long> {
         CriteriaQuery<VoterGroup> q = cb.createQuery(VoterGroup.class);
         Root<VoterGroup> b=q.from(VoterGroup.class);
         Expression<List<Voter>> voters=b.get("voters");
+        Expression<Voter> supervisor = b.get("supervisor");
         Voter voter = em.find(Voter.class, id);
-        q.select(b).where(cb.not(cb.isMember(voter, voters))).orderBy(cb.desc(b.get("id")));
+        q.select(b).where(cb.and(cb.not(cb.isMember(voter, voters)), cb.not(cb.equal(supervisor,voter)))).orderBy(cb.desc(b.get("id")));
         List<VoterGroup> voterGroups = em.createQuery(q).getResultList();
         return voterGroups;
     }
@@ -134,6 +137,35 @@ public class VoterGroupDao extends GenericDaoImpl<VoterGroup, Long> {
         q.select(b).where(cb.equal(supervisor,voter)).orderBy(cb.desc(b.get("id")));
         List<VoterGroup> voterGroups = em.createQuery(q).getResultList();
         return voterGroups;
+    }
+
+
+
+    public Poll createPoll(Poll poll, Long groupId) throws DaoException {
+        try {
+            em = emf.createEntityManager();
+            tx = em.getTransaction();
+            tx.begin();
+            VoterGroup voterGroup = em.find(VoterGroup.class, groupId);
+            poll.setVoterGroup(voterGroup);
+            em.persist(poll);
+            Iterator<Voter> it = voterGroup.getVoters().iterator();
+            while (it.hasNext()){
+                Voter voter = it.next();
+                Ballot ballot = new Ballot();
+                ballot.setAnswer(0L);
+                ballot.setPoll(poll);
+                ballot.setVoter(voter);
+                em.persist(ballot);
+            }
+            tx.commit();
+            return poll;
+        } catch (Exception e) {
+            tx.rollback();
+            throw new DaoException("Chyba při ukládání entity", e);
+        } finally {
+            em.close();
+        }
     }
 
 }

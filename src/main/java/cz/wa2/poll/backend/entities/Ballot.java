@@ -11,14 +11,13 @@ public class Ballot {
     @Column(name = "id")
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(cascade = {CascadeType.ALL})
     private Poll poll;
 
-    @ManyToOne
+    @ManyToOne(cascade = {CascadeType.ALL})
     private Voter voter;
 
-    @ManyToOne
-    private Answer answer;
+    private Long answer;
 
     public Poll getPoll() {
         return poll;
@@ -44,11 +43,11 @@ public class Ballot {
         this.id = id;
     }
 
-    public Answer getAnswer() {
+    public Long getAnswer() {
         return answer;
     }
 
-    public void setAnswer(Answer answer) {
+    public void setAnswer(Long answer) {
         this.answer = answer;
     }
 

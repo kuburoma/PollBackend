@@ -1,11 +1,14 @@
 package cz.wa2.poll.backend.rest;
 
+import cz.wa2.poll.backend.dao.PollDao;
 import cz.wa2.poll.backend.dao.VoterDao;
 import cz.wa2.poll.backend.dao.VoterGroupDao;
 import cz.wa2.poll.backend.dto.VoterGroupDTO;
+import cz.wa2.poll.backend.entities.Poll;
 import cz.wa2.poll.backend.entities.Voter;
 import cz.wa2.poll.backend.entities.VoterGroup;
 import cz.wa2.poll.backend.exception.DaoException;
+import cz.wa2.poll.backend.websocket.Producer;
 import org.glassfish.jersey.process.internal.RequestScoped;
 
 import javax.persistence.EntityManager;
@@ -30,12 +33,10 @@ public class HelloWorld {
     @GET
     // The Java method will produce content identified by the MIME Media type "text/plain"
     @Produces("text/plain")
-    public String getClichedMessage() {
+    public String getClichedMessage() throws Exception {
 
-        VoterGroupDao vgd = new VoterGroupDao();
-
-        em.find(Voter.class, 1L);
-
+        Producer producer = new Producer("hello");
+        producer.sendMessage("ahoj");
 
         return "";
 

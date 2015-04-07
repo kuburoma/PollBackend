@@ -1,5 +1,8 @@
 package cz.wa2.poll.backend.dto;
 
+import cz.wa2.poll.backend.entities.Poll;
+import cz.wa2.poll.backend.entities.Voter;
+
 public class PollDTO {
 
     private Long id;
@@ -9,10 +12,10 @@ public class PollDTO {
     public PollDTO() {
     }
 
-    public PollDTO(Long id, String name, String question) {
-        this.id = id;
-        this.name = name;
-        this.question = question;
+    public PollDTO(Poll poll) {
+        this.id = poll.getId();
+        this.name = poll.getName();
+        this.question = poll.getQuestion();
     }
 
     public Long getId() {
@@ -37,6 +40,16 @@ public class PollDTO {
 
     public void setQuestion(String question) {
         this.question = question;
+    }
+
+    public Poll toEntity(){
+        Poll poll = new Poll();
+        if(id != null){
+            poll.setId(id);
+        }
+        poll.setName(this.name);
+        poll.setQuestion(this.question);
+        return poll;
     }
 
     @Override

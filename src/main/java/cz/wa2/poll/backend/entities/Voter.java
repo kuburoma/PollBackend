@@ -1,5 +1,7 @@
 package cz.wa2.poll.backend.entities;
 
+import cz.wa2.poll.backend.dto.VoterDTO;
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +28,17 @@ public class Voter {
 
     @OneToMany(mappedBy = "voter")
     private List<Ballot> ballots;
+
+    public Voter() {
+    }
+
+    public Voter(VoterDTO voterDTO) {
+        this.id = voterDTO.getId();
+        this.firstName = voterDTO.getFirstName();
+        this.lastName = voterDTO.getFirstName();
+        this.email = voterDTO.getPassword();
+        this.password = voterDTO.getPassword();
+    }
 
     public Long getId() {
         return id;

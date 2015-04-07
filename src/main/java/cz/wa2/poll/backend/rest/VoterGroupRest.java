@@ -2,6 +2,7 @@ package cz.wa2.poll.backend.rest;
 
 import cz.wa2.poll.backend.dao.VoterGroupDao;
 import cz.wa2.poll.backend.dto.ConvertorDTO;
+import cz.wa2.poll.backend.dto.PollDTO;
 import cz.wa2.poll.backend.dto.VoterDTO;
 import cz.wa2.poll.backend.dto.VoterGroupDTO;
 import cz.wa2.poll.backend.entities.Voter;
@@ -21,12 +22,12 @@ import java.util.List;
 public class VoterGroupRest {
 
     ConvertorDTO convertorDTO = new ConvertorDTO();
+    VoterGroupDao vd = new VoterGroupDao();
 
     @GET
     @Path("/{id}/voters")
-    public Response getVotersOfVoterGroup(@PathParam("id") Long id) {
+    public Response getVoters(@PathParam("id") Long id) {
         try {
-            VoterGroupDao vd = new VoterGroupDao();
             List<Voter> voters = vd.findVoters(id);
             List<VoterDTO> voterDTOs = new ArrayList<VoterDTO>();
             Iterator<Voter> it = voters.iterator();
@@ -43,9 +44,19 @@ public class VoterGroupRest {
     @POST
     public Response saveVoterGroup(VoterGroupDTO voterGroupDTO) {
         try {
-            VoterGroupDao vd = new VoterGroupDao();
             VoterGroup voterGroup = vd.create(voterGroupDTO.toEntity());
             return Response.status(Response.Status.OK).entity(new VoterGroupDTO(voterGroup)).build();
+        } catch (DaoException e) {
+            e.printStackTrace();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @POST
+    @Path("/{id}/poll")
+    public Response createPoll(@PathParam("id") Long id, PollDTO pollDTO) {
+        try {
+            return Response.status(Response.Status.OK).entity(new PollDTO(vd.createPoll(pollDTO.toEntity(), id))).build();
         } catch (DaoException e) {
             e.printStackTrace();
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
@@ -56,7 +67,7 @@ public class VoterGroupRest {
     @Path("/{id}")
     public Response saveVoterGroup(@PathParam("id") Long id, VoterGroupDTO voterGroupDTO) {
         try {
-            VoterGroupDao vd = new VoterGroupDao();
+
             VoterGroup vg = vd.find(id);
             vg.setName(voterGroupDTO.getName());
             vg.setDescription(voterGroupDTO.getDescription());
@@ -69,11 +80,10 @@ public class VoterGroupRest {
     }
 
     @PUT
-    @Path("/{id}/remove/{voter}/voter")
-    public Response saveVoterGroup(@PathParam("id") Long id, @PathParam("voter") Long idVoter) {
+    @Path("/{votergroup}/voter/{voter}")
+    public Response putVoterToVotergroup(@PathParam("votergroup") Long votergroup, @PathParam("voter") Long voter) {
         try {
-            VoterGroupDao vd = new VoterGroupDao();
-            vd.removeVoter(id, idVoter);
+            vd.putVoter(votergroup,voter);
             return Response.status(Response.Status.OK).build();
         } catch (DaoException e) {
             e.printStackTrace();
@@ -81,13 +91,15 @@ public class VoterGroupRest {
         }
     }
 
-    private List<VoterGroupDTO> convertVoterGroupToDTO(List<VoterGroup> voterGroups){
-        List<VoterGroupDTO> voterGroupDTOs = new ArrayList<VoterGroupDTO>();
-        Iterator<VoterGroup> it = voterGroups.iterator();
-        while (it.hasNext()){
-            voterGroupDTOs.add(new VoterGroupDTO(it.next()));
+    @DELETE
+    @Path("/{votergroup}/voter/{voter}")
+    public Response deleteVoterFromVotergroup(@PathParam("votergroup") Long votergroup, @PathParam("voter") Long voter) {
+        try {
+            vd.removeVoter(votergroup, voter);
+            return Response.status(Response.Status.OK).build();
+        } catch (DaoException e) {
+            e.printStackTrace();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         }
-        return voterGroupDTOs;
     }
-
 }

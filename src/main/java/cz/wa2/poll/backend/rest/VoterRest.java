@@ -1,11 +1,16 @@
 package cz.wa2.poll.backend.rest;
 
+import cz.wa2.poll.backend.dao.BallotDao;
+import cz.wa2.poll.backend.dao.PollDao;
 import cz.wa2.poll.backend.dao.VoterDao;
 import cz.wa2.poll.backend.dao.VoterGroupDao;
+import cz.wa2.poll.backend.dto.BallotDTO;
 import cz.wa2.poll.backend.dto.ConvertorDTO;
 import cz.wa2.poll.backend.dto.VoterDTO;
+import cz.wa2.poll.backend.entities.Ballot;
 import cz.wa2.poll.backend.entities.Voter;
 import cz.wa2.poll.backend.exception.DaoException;
+
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -19,6 +24,8 @@ public class VoterRest {
     ConvertorDTO convertorDTO = new ConvertorDTO();
     VoterDao vd = new VoterDao();
     VoterGroupDao voterGroupDao = new VoterGroupDao();
+    PollDao pollDao = new PollDao();
+    BallotDao ballotDao = new BallotDao();
 
     @GET
     public Response getVoters() {
@@ -76,6 +83,28 @@ public class VoterRest {
     }
 
     @GET
+    @Path(value = "/{id}/nonvoted_polls")
+    public Response getNonvotedPolls(@PathParam("id") Long id) {
+        try {
+            return Response.status(Response.Status.OK).entity(convertorDTO.convertPollToDTO(pollDao.getNonvotedPolls(id))).build();
+        } catch (DaoException e) {
+            e.printStackTrace();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @GET
+    @Path(value = "/{id}/voted_polls")
+    public Response getVotedPolls(@PathParam("id") Long id) {
+        try {
+            return Response.status(Response.Status.OK).entity(convertorDTO.convertPollToDTO(pollDao.getVotedPolls(id))).build();
+        } catch (DaoException e) {
+            e.printStackTrace();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @GET
     @Path(value = "/login")
     public Response getLogin(@QueryParam("email") String email, @QueryParam("password") String password) {
         try {
@@ -101,6 +130,17 @@ public class VoterRest {
             } else {
                 return Response.status(Response.Status.CONFLICT).entity("Email already exist").build();
             }
+        } catch (DaoException e) {
+            e.printStackTrace();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @GET
+    @Path(value = "/{voter}/poll/{poll}/ballot")
+    public Response updateBallot(@PathParam("voter") Long voterId, @PathParam("poll") Long pollId, BallotDTO ballot) {
+        try {
+            return Response.status(Response.Status.OK).entity(new BallotDTO(ballotDao.getBallot(voterId,pollId))).build();
         } catch (DaoException e) {
             e.printStackTrace();
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();

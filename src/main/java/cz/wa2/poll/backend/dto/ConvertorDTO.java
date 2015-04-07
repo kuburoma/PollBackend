@@ -1,5 +1,7 @@
 package cz.wa2.poll.backend.dto;
 
+import cz.wa2.poll.backend.entities.Ballot;
+import cz.wa2.poll.backend.entities.Poll;
 import cz.wa2.poll.backend.entities.Voter;
 import cz.wa2.poll.backend.entities.VoterGroup;
 
@@ -28,6 +30,24 @@ public class ConvertorDTO {
             voterDTOs.add(new VoterDTO(it.next()));
         }
         return voterDTOs;
+    }
+
+    public List<PollDTO> convertPollToDTO(List<Poll> polls){
+        List<PollDTO> pollDTOs = new ArrayList<PollDTO>();
+        Iterator<Poll> it = polls.iterator();
+        while (it.hasNext()) {
+            pollDTOs.add(new PollDTO(it.next()));
+        }
+        return pollDTOs;
+    }
+
+    public List<BallotDTO> convertBallotToDTO(List<Ballot> polls){
+        List<BallotDTO> ballotDTOs = new ArrayList<BallotDTO>();
+        Iterator<Ballot> it = polls.iterator();
+        while (it.hasNext()) {
+            ballotDTOs.add(new BallotDTO(it.next()));
+        }
+        return ballotDTOs;
     }
 
 }

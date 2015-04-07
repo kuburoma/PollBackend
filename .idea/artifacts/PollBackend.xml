@@ -51,6 +51,8 @@
           <element id="library" level="project" name="Maven: com.fasterxml.jackson.module:jackson-module-jaxb-annotations:2.3.2" />
           <element id="library" level="project" name="Maven: org.glassfish.jersey.ext:jersey-entity-filtering:2.17" />
           <element id="library" level="project" name="Maven: org.glassfish.jersey.media:jersey-media-json-jackson:2.17" />
+          <element id="library" level="project" name="Maven: com.rabbitmq:amqp-client:3.5.1" />
+          <element id="library" level="project" name="Maven: commons-lang:commons-lang:2.6" />
         </element>
       </element>
     </root>

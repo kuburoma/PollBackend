@@ -1,23 +1,27 @@
 package cz.wa2.poll.backend.dto;
 
+import cz.wa2.poll.backend.entities.Ballot;
+
+import javax.persistence.Entity;
+
 public class BallotDTO {
 
     private Long id;
-    private Boolean answer;
+    private Long answer;
 
     public BallotDTO() {
     }
 
-    public BallotDTO(Long id, Boolean answer) {
-        this.id = id;
-        this.answer = answer;
+    public BallotDTO(Ballot ballot) {
+        this.id = ballot.getId();
+        this.answer = ballot.getAnswer();
     }
 
-    public Boolean getAnswer() {
+    public Long getAnswer() {
         return answer;
     }
 
-    public void setAnswer(Boolean answer) {
+    public void setAnswer(Long answer) {
         this.answer = answer;
     }
 
@@ -27,6 +31,13 @@ public class BallotDTO {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Ballot toEntity(){
+        Ballot ballot = new Ballot();
+        ballot.setId(id);
+        ballot.setAnswer(answer);
+        return ballot;
     }
 
     @Override

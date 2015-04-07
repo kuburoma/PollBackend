@@ -21,9 +21,6 @@ public class Poll {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "poll")
     private List<Ballot> ballots;
 
-    @OneToMany(cascade = CascadeType.ALL)
-    private List<Answer> answers;
-
     public Long getId() {
         return id;
     }
@@ -72,22 +69,6 @@ public class Poll {
         this.ballots = ballots;
     }
 
-    public List<Answer> getAnswers() {
-        return answers;
-    }
-
-    @Transient
-    public void addAnswer(Answer answer){
-        if(this.answers == null){
-            this.answers = new ArrayList<Answer>();
-        }
-        this.answers.add(answer);
-
-    }
-
-    public void setAnswers(List<Answer> answers) {
-        this.answers = answers;
-    }
 
     @Override
     public String toString() {

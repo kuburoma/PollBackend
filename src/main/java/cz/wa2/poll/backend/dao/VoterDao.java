@@ -1,8 +1,6 @@
 package cz.wa2.poll.backend.dao;
 
 import cz.wa2.poll.backend.dto.VoterDTO;
-import cz.wa2.poll.backend.dto.VoterFullDTO;
-import cz.wa2.poll.backend.entities.Poll;
 import cz.wa2.poll.backend.entities.Voter;
 import cz.wa2.poll.backend.entities.VoterGroup;
 import cz.wa2.poll.backend.exception.DaoException;
@@ -36,7 +34,6 @@ public class VoterDao extends GenericDaoImpl<Voter, Long> {
                 return null;
             }
         } catch (Exception e) {
-            tx.rollback();
             throw new DaoException("Chyba při ukládání entity", e);
         } finally {
             em.close();

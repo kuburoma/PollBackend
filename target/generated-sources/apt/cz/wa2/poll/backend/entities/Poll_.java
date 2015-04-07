@@ -12,7 +12,6 @@ public abstract class Poll_ {
 	public static volatile ListAttribute<Poll, Ballot> ballots;
 	public static volatile SingularAttribute<Poll, String> question;
 	public static volatile SingularAttribute<Poll, String> name;
-	public static volatile ListAttribute<Poll, Answer> answers;
 	public static volatile SingularAttribute<Poll, Long> id;
 	public static volatile SingularAttribute<Poll, VoterGroup> voterGroup;
 
