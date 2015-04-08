@@ -73,14 +73,4 @@ public class VoterDao extends GenericDaoImpl<Voter, Long> {
         }
     }
 
-    public List<Voter> ahoj() {
-        em = emf.createEntityManager();
-        CriteriaBuilder cb = em.getCriteriaBuilder();
-        CriteriaQuery<Voter> q = cb.createQuery(Voter.class);
-        Root<Voter> schoolRoot = q.from(Voter.class);
-        Join<Voter, VoterGroup> join = schoolRoot.join("voterGroups");
-        q.where(cb.notEqual(join.get("id"), 2));
-        List<Voter> voters = em.createQuery(q).getResultList();
-        return voters;
-    }
 }

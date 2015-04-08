@@ -39,14 +39,23 @@ public class GenericDaoImpl<T, PK extends Serializable> implements GenericDao<T,
     }
 
     @Override
-    public List<T> findAll() throws DaoException {
+    public List<T> findAll(Integer offset, Integer base) throws DaoException {
         try {
             em = emf.createEntityManager();
             CriteriaBuilder cb = em.getCriteriaBuilder();
             CriteriaQuery<T> q = cb.createQuery(entityClass);
             Root<T> c = q.from(entityClass);
             q.select(c);
-            return em.createQuery(q).getResultList();
+            Query query = em.createQuery(q);
+
+            if (offset != null) {
+                query.setFirstResult(offset);
+            }
+            if (base != null) {
+                query.setMaxResults(base);
+            }
+
+            return query.getResultList();
         } catch (Exception e) {
             throw new DaoException("Chyba při hledání entit", e);
         } finally {
@@ -55,17 +64,23 @@ public class GenericDaoImpl<T, PK extends Serializable> implements GenericDao<T,
     }
 
 
-    public List<T> findBy(String columnName, String name) throws DaoException {
+    public List<T> findBy(String columnName, String name, String orderBy) throws DaoException {
         try {
             em = emf.createEntityManager();
             CriteriaBuilder cb = em.getCriteriaBuilder();
             CriteriaQuery<T> q = cb.createQuery(entityClass);
             Root<T> c = q.from(entityClass);
             q.select(c);
-            q.where(cb.equal(c.get(columnName), name));
+
+            // TODO
+
+            //q.where(cb.equal(c.get(columnName), name));
+
+            q.orderBy(cb.desc(c.get(orderBy)));
+
             return em.createQuery(q).getResultList();
         } catch (Exception e) {
-            throw new DaoException("Chyba při hledání entit", e);
+            throw new DaoException("Chyba při hledání entit dle řádku "+columnName+": "+name, e);
         } finally {
             em.close();
         }
@@ -98,7 +113,7 @@ public class GenericDaoImpl<T, PK extends Serializable> implements GenericDao<T,
             tx.commit();
         } catch (Exception e) {
             tx.rollback();
-            throw new DaoException("Chyba při ukládání entity", e);
+            throw new DaoException("Chyba při upravení entity", e);
         } finally {
             em.close();
         }

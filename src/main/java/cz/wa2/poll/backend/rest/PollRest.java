@@ -25,7 +25,7 @@ public class PollRest {
     @GET
     public Response getPolls() {
         try {
-            return Response.status(Response.Status.OK).entity(convertorDTO.convertPollToDTO(pollDao.findAll())).build();
+            return Response.status(Response.Status.OK).entity(convertorDTO.convertPollToDTO(pollDao.findAll(null, null))).build();
         } catch (DaoException e) {
             e.printStackTrace();
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();

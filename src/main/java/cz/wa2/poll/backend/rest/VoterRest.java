@@ -31,7 +31,7 @@ public class VoterRest {
     public Response getVoters() {
         try {
             VoterDao vd = new VoterDao();
-            return Response.status(Response.Status.OK).entity(convertorDTO.convertVoterToDTO(vd.findAll())).build();
+            return Response.status(Response.Status.OK).entity(convertorDTO.convertVoterToDTO(vd.findAll(null, null))).build();
         } catch (DaoException e) {
             e.printStackTrace();
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();

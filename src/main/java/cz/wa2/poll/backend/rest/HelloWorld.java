@@ -33,10 +33,16 @@ public class HelloWorld {
     @GET
     // The Java method will produce content identified by the MIME Media type "text/plain"
     @Produces("text/plain")
-    public String getClichedMessage() throws Exception {
+    public String getClichedMessage() {
 
-        Producer producer = new Producer("hello");
-        producer.sendMessage("ahoj");
+        try {
+            VoterDao voterDao = new VoterDao();
+            List<Voter> list = voterDao.findBy("ahoj", "lol","asdasd");
+        }catch (DaoException e){
+            System.out.println(e.getMessage());
+        }
+        //Producer producer = new Producer("hello");
+        //producer.sendMessage("ahoj");
 
         return "";
 

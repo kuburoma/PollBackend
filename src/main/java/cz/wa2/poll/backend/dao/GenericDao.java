@@ -11,7 +11,7 @@ import java.util.List;
 public interface GenericDao<T, PK extends Serializable>  {
 
     T find(PK id) throws DaoException;
-    List<T> findAll() throws DaoException;
+    List<T> findAll(Integer offset, Integer base) throws DaoException;
     T create(T object) throws DaoException;
     void update(T object) throws DaoException;
     void delete(PK id) throws DaoException;
