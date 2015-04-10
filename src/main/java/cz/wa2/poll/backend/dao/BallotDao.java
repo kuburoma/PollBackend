@@ -1,18 +1,14 @@
 package cz.wa2.poll.backend.dao;
 
 import cz.wa2.poll.backend.entities.Ballot;
+import cz.wa2.poll.backend.entities.EntitiesList;
 import cz.wa2.poll.backend.entities.Poll;
 import cz.wa2.poll.backend.entities.Voter;
 import cz.wa2.poll.backend.exception.DaoException;
+import cz.wa2.poll.backend.exception.InputException;
 
 import javax.persistence.PersistenceException;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Root;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 
 public class BallotDao extends GenericDaoImpl<Ballot, Long> {
 
@@ -20,10 +16,17 @@ public class BallotDao extends GenericDaoImpl<Ballot, Long> {
         super(Ballot.class);
     }
 
+    /**
+     * Nastavuje pouze novou hodnotu odpovedi.
+     * Zbytek kvuli manipulovani s volbami zmenit nejde.
+     *
+     * @param ballot
+     * @throws DaoException
+     */
     @Override
     public void update(Ballot ballot) throws DaoException {
-        em = emf.createEntityManager();
         try {
+            em = emf.createEntityManager();
             tx = em.getTransaction();
             tx.begin();
             Ballot object = em.find(Ballot.class, ballot.getId());
@@ -38,24 +41,58 @@ public class BallotDao extends GenericDaoImpl<Ballot, Long> {
         }
     }
 
-    public Ballot getBallot(Long voterId, Long pollId) throws DaoException {
-        em = emf.createEntityManager();
-        CriteriaBuilder cb=em.getCriteriaBuilder();
-        CriteriaQuery<Ballot> q = cb.createQuery(Ballot.class);
-        Root<Ballot> b=q.from(Ballot.class);
-        Expression<Voter> voterBallot = b.get("voter");
-        Expression<Poll> pollBallot = b.get("poll");
+    /**
+     * Pro uzivatele a hlasovani najde jeho hlasovaci listek.
+     *
+     * @param voterId id uzivatele
+     * @param pollId  id hlasovani
+     * @return
+     * @throws DaoException
+     */
+    public Ballot findBallot(Long voterId, Long pollId) throws DaoException {
+        try {
+            initializationSearch();
 
-        Voter voter = em.find(Voter.class, voterId);
-        Poll poll = em.find(Poll.class, pollId);
+            Expression<Voter> voterBallot = root.get("voter");
+            Expression<Poll> pollBallot = root.get("poll");
 
-        q.select(b).where(cb.and(cb.equal(voterBallot, voter), cb.equal(pollBallot, poll))).orderBy(cb.desc(b.get("id")));
-        List<Ballot> ballots = em.createQuery(q).getResultList();
-        if(ballots.size() == 1){
-            return ballots.get(0);
-        }else{
-            return null;
+            Voter voter = em.find(Voter.class, voterId);
+            Poll poll = em.find(Poll.class, pollId);
+
+            cq.where(cb.and(cb.equal(voterBallot, voter), cb.equal(pollBallot, poll)));
+
+            return em.createQuery(cq).getSingleResult();
+        } catch (PersistenceException e) {
+            throw new DaoException("Error when loading ballot", e);
+        } finally {
+            em.close();
         }
+    }
 
+    /**
+     * Vyhledává pro hlasování ejho hlasovací lístky.
+     *
+     * @param id
+     * @param offset
+     * @param base
+     * @param order
+     * @return
+     * @throws DaoException
+     * @throws InputException
+     */
+    public EntitiesList<Ballot> findPollBallots(Long id, Integer offset, Integer base, String order) throws DaoException, InputException {
+        try {
+            initializationSearch();
+
+            Expression<Poll> pollBallot = root.get("poll");
+            Poll poll = em.find(Poll.class, id);
+            cq.select(root).where(cb.equal(pollBallot, poll));
+
+            return makeEntitiesList(offset, base, order);
+        } catch (PersistenceException e) {
+            throw new DaoException("Error when finding ballots", e);
+        } finally {
+            em.close();
+        }
     }
 }

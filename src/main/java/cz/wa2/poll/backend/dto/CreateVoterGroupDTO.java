@@ -1,9 +1,5 @@
 package cz.wa2.poll.backend.dto;
 
-import cz.wa2.poll.backend.entities.VoterGroup;
-
-import java.util.List;
-
 /**
  * Created by Nell on 2.4.2015.
  */

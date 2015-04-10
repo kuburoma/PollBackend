@@ -1,9 +1,9 @@
 package cz.wa2.poll.backend.websocket;
 
+import org.apache.commons.lang.SerializationUtils;
+
 import java.io.IOException;
 import java.io.Serializable;
-
-import org.apache.commons.lang.SerializationUtils;
 
 
 /**

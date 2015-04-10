@@ -7,7 +7,6 @@ import cz.wa2.poll.backend.dao.VoterGroupDao;
 import cz.wa2.poll.backend.dto.BallotDTO;
 import cz.wa2.poll.backend.dto.ConvertorDTO;
 import cz.wa2.poll.backend.dto.VoterDTO;
-import cz.wa2.poll.backend.entities.Ballot;
 import cz.wa2.poll.backend.entities.Voter;
 import cz.wa2.poll.backend.exception.DaoException;
 
@@ -27,7 +26,7 @@ public class VoterRest {
     PollDao pollDao = new PollDao();
     BallotDao ballotDao = new BallotDao();
 
-    @GET
+/*    @GET
     public Response getVoters() {
         try {
             VoterDao vd = new VoterDao();
@@ -36,7 +35,7 @@ public class VoterRest {
             e.printStackTrace();
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         }
-    }
+    }*/
 
     @GET
     @Path(value = "/{id}")
@@ -49,6 +48,7 @@ public class VoterRest {
         }
     }
 
+/*
     @GET
     @Path(value = "/{id}/supervised_groups")
     public Response getSupervisedGroups(@PathParam("id") Long id) {
@@ -103,12 +103,13 @@ public class VoterRest {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         }
     }
+*/
 
     @GET
     @Path(value = "/login")
     public Response getLogin(@QueryParam("email") String email, @QueryParam("password") String password) {
         try {
-            Voter voter = vd.getVoterByEmail(email);
+            Voter voter = vd.findVoterByEmail(email);
 
             if (voter != null && voter.getPassword().equals(password)) {
                 return Response.status(Response.Status.OK).entity(new VoterDTO(voter)).build();
@@ -124,7 +125,7 @@ public class VoterRest {
     @POST
     public Response saveVoter(VoterDTO voter) {
         try {
-            Voter voterByEmail = vd.getVoterByEmail(voter.getEmail());
+            Voter voterByEmail = vd.findVoterByEmail(voter.getEmail());
             if (voterByEmail == null) {
                 return Response.status(Response.Status.OK).entity(new VoterDTO(vd.create(voter.toEntity()))).build();
             } else {
@@ -140,19 +141,19 @@ public class VoterRest {
     @Path(value = "/{voter}/poll/{poll}/ballot")
     public Response updateBallot(@PathParam("voter") Long voterId, @PathParam("poll") Long pollId, BallotDTO ballot) {
         try {
-            return Response.status(Response.Status.OK).entity(new BallotDTO(ballotDao.getBallot(voterId,pollId))).build();
+            return Response.status(Response.Status.OK).entity(new BallotDTO(ballotDao.findBallot(voterId, pollId))).build();
         } catch (DaoException e) {
             e.printStackTrace();
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         }
     }
 
-    @PUT
+/*    @PUT
     public Response updateVoter(VoterDTO voter) {
         VoterDao vd = new VoterDao();
-        vd.update(voter);
+        vd.update(voter.toEntity());
         return Response.status(Response.Status.OK).build();
-    }
+    }*/
 
     @DELETE
     @Path(value = "/{id}")

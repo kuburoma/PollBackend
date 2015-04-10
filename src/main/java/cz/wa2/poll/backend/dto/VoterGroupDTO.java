@@ -3,16 +3,11 @@ package cz.wa2.poll.backend.dto;
 import cz.wa2.poll.backend.entities.Voter;
 import cz.wa2.poll.backend.entities.VoterGroup;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
 public class VoterGroupDTO {
 
     private Long id;
     private String name;
     private String description;
-    private VoterDTO supervisor;
 
     public VoterGroupDTO() {
     }
@@ -47,21 +42,10 @@ public class VoterGroupDTO {
         this.description = description;
     }
 
-    public VoterDTO getSupervisor() {
-        return supervisor;
-    }
-
-    public void setSupervisor(VoterDTO supervisor) {
-        this.supervisor = supervisor;
-    }
-
     public VoterGroup toEntity(){
         VoterGroup voterGroup = new VoterGroup();
         voterGroup.setName(this.getName());
         voterGroup.setDescription(this.getDescription());
-        if(supervisor != null){
-            voterGroup.setSupervisor(new Voter(supervisor));
-        }
         return voterGroup;
     }
 

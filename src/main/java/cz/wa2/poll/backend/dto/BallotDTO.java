@@ -2,8 +2,6 @@ package cz.wa2.poll.backend.dto;
 
 import cz.wa2.poll.backend.entities.Ballot;
 
-import javax.persistence.Entity;
-
 public class BallotDTO {
 
     private Long id;

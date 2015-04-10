@@ -18,13 +18,13 @@ import java.util.List;
 
 @Path("/votergroup")
 @Consumes({MediaType.APPLICATION_JSON})
-@Produces({MediaType.APPLICATION_JSON})
+@Produces(MediaType.APPLICATION_JSON+ "; charset=UTF-8")
 public class VoterGroupRest {
 
     ConvertorDTO convertorDTO = new ConvertorDTO();
     VoterGroupDao vd = new VoterGroupDao();
 
-    @GET
+/*    @GET
     @Path("/{id}/voters")
     public Response getVoters(@PathParam("id") Long id) {
         try {
@@ -39,7 +39,7 @@ public class VoterGroupRest {
             e.printStackTrace();
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         }
-    }
+    }*/
 
     @POST
     public Response saveVoterGroup(VoterGroupDTO voterGroupDTO) {

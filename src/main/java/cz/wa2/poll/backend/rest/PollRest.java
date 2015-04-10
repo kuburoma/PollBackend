@@ -2,12 +2,11 @@ package cz.wa2.poll.backend.rest;
 
 import cz.wa2.poll.backend.dao.PollDao;
 import cz.wa2.poll.backend.dao.VoterDao;
-import cz.wa2.poll.backend.dao.VoterGroupDao;
 import cz.wa2.poll.backend.dto.ConvertorDTO;
 import cz.wa2.poll.backend.dto.PollDTO;
 import cz.wa2.poll.backend.dto.VoterDTO;
-import cz.wa2.poll.backend.entities.Voter;
 import cz.wa2.poll.backend.exception.DaoException;
+import cz.wa2.poll.backend.exception.InputException;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -16,21 +15,22 @@ import javax.ws.rs.core.Response;
 
 @Path("/poll")
 @Consumes({MediaType.APPLICATION_JSON})
-@Produces({MediaType.APPLICATION_JSON})
+@Produces(MediaType.APPLICATION_JSON+ "; charset=UTF-8")
 public class PollRest {
 
     ConvertorDTO convertorDTO = new ConvertorDTO();
     PollDao pollDao = new PollDao();
 
-    @GET
-    public Response getPolls() {
+
+/*    @GET
+    public Response getPolls() throws InputException {
         try {
-            return Response.status(Response.Status.OK).entity(convertorDTO.convertPollToDTO(pollDao.findAll(null, null))).build();
+            return Response.status(Response.Status.OK).entity(convertorDTO.convertPollToDTO(pollDao.findAll(null, null, null))).build();
         } catch (DaoException e) {
             e.printStackTrace();
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         }
-    }
+    }*/
 
     @GET
     @Path(value = "/{id}")
@@ -43,7 +43,7 @@ public class PollRest {
         }
     }
 
-    @GET
+/*    @GET
     @Path(value = "/{id}/ballot")
     public Response getPollBallots(@PathParam("id") Long id) {
         try {
@@ -52,12 +52,12 @@ public class PollRest {
             e.printStackTrace();
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         }
-    }
+    }*/
 
     @PUT
     public Response updateVoter(VoterDTO voter) {
         VoterDao vd = new VoterDao();
-        vd.update(voter);
+        //vd.update(voter);
         return Response.status(Response.Status.OK).build();
     }
 

@@ -1,10 +1,8 @@
 package cz.wa2.poll.backend.dto;
 
 import cz.wa2.poll.backend.entities.Voter;
-import cz.wa2.poll.backend.entities.VoterGroup;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 public class VoterDTO {
