@@ -3,6 +3,7 @@ package cz.wa2.poll.backend.entities;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Entity
 @Table(name = "Poll")
@@ -14,6 +15,9 @@ public class Poll {
     private Long id;
     private String name;
     private String question;
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    Map<Integer, String> answers;
 
     @ManyToOne(cascade = {
             CascadeType.PERSIST,
@@ -58,6 +62,14 @@ public class Poll {
 
     public List<Ballot> getBallots() {
         return ballots;
+    }
+
+    public Map<Integer, String> getAnswers() {
+        return answers;
+    }
+
+    public void setAnswers(Map<Integer, String> answers) {
+        this.answers = answers;
     }
 
     @Transient

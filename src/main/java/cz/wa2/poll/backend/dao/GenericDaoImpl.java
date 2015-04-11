@@ -64,25 +64,6 @@ public class GenericDaoImpl<T, PK extends Serializable> implements GenericDao<T,
         }
     }
 
-    // TODO třeba smazat již není třeba
-    public List<T> findBy(String columnName, String name, String order) throws DaoException, InputException {
-        try {
-            em = emf.createEntityManager();
-            em.getCriteriaBuilder();
-            CriteriaQuery<T> q = cb.createQuery(entityClass);
-            Root<T> c = q.from(entityClass);
-            q.select(c);
-
-            orderBy(order);
-
-            return em.createQuery(q).getResultList();
-        } catch (PersistenceException e) {
-            throw new DaoException("Chyba při hledání entit dle řádku " + columnName + ": " + name, e);
-        } finally {
-            em.close();
-        }
-    }
-
     /**
      * Vytvoření entity
      *
@@ -100,6 +81,7 @@ public class GenericDaoImpl<T, PK extends Serializable> implements GenericDao<T,
             tx.commit();
             return object;
         } catch (PersistenceException e) {
+            e.printStackTrace();
             tx.rollback();
             throw new DaoException("Error when saving entity", e);
         } finally {

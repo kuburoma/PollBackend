@@ -5,7 +5,7 @@ import cz.wa2.poll.backend.entities.Ballot;
 public class BallotDTO {
 
     private Long id;
-    private Long answer;
+    private Integer answer;
 
     public BallotDTO() {
     }
@@ -15,11 +15,11 @@ public class BallotDTO {
         this.answer = ballot.getAnswer();
     }
 
-    public Long getAnswer() {
+    public Integer getAnswer() {
         return answer;
     }
 
-    public void setAnswer(Long answer) {
+    public void setAnswer(Integer answer) {
         this.answer = answer;
     }
 

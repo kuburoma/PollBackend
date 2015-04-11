@@ -9,10 +9,7 @@ import cz.wa2.poll.backend.exception.InputException;
 
 import javax.management.Query;
 import javax.persistence.PersistenceException;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Root;
+import javax.persistence.criteria.*;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -27,14 +24,15 @@ public class PollDao extends GenericDaoImpl<Poll, Long> {
         try {
             initializationSearch();
 
-            Expression<Voter> voterBallot = root.join("ballots").get("voter");
-            Expression<Long> answer = root.join("ballots").get("answer");
+            Join<Poll, Ballot> join = root.join("ballots");
+            Expression<Voter> voterBallot = join.get("voter");
+            Expression<Integer> answer = join.get("answer");
 
             Voter voter = em.find(Voter.class, id);
             if (voted) {
-                cq.where(cb.and(cb.equal(voterBallot, voter), cb.equal(answer, 0L)));
+                cq.where(cb.and(cb.equal(voterBallot, voter), cb.isNotNull(answer)));
             } else {
-                cq.where(cb.and(cb.equal(voterBallot, voter), cb.not(cb.equal(answer, 0L))));
+                cq.where(cb.and(cb.equal(voterBallot, voter), cb.isNull(answer)));
             }
 
             return makeEntitiesList(offset, base, order);

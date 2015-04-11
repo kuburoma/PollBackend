@@ -62,9 +62,9 @@ public class VoterGroupDao extends GenericDaoImpl<VoterGroup, Long> {
             tx.begin();
             VoterGroup voterGroup = (VoterGroup) em.find(entityClass, votergroupId);
             Iterator<Voter> it = voterGroup.getVoters().iterator();
-            while(it.hasNext()){
+            while (it.hasNext()) {
                 Voter v = it.next();
-                if(v.getId() == voterId){
+                if (v.getId() == voterId) {
                     it.remove();
                     break;
                 }
@@ -89,11 +89,17 @@ public class VoterGroupDao extends GenericDaoImpl<VoterGroup, Long> {
     public void putVoter(Long votergroupId, Long voterId) throws DaoException {
         em = emf.createEntityManager();
         try {
-            tx = em.getTransaction();
-            tx.begin();
             VoterGroup voterGroup = (VoterGroup) em.find(entityClass, votergroupId);
+            Iterator<Voter> it = voterGroup.getVoters().iterator();
+            while (it.hasNext()) {
+                if (it.next().getId() == voterId) {
+                    throw new DaoException("Uživatel již ve skupině je");
+                }
+            }
             Voter voter = em.find(Voter.class, voterId);
             voterGroup.addVoter(voter);
+            tx = em.getTransaction();
+            tx.begin();
             em.merge(voterGroup);
             tx.commit();
         } catch (PersistenceException e) {
@@ -104,7 +110,6 @@ public class VoterGroupDao extends GenericDaoImpl<VoterGroup, Long> {
     }
 
     /**
-     *
      * @param voterId
      * @param findWho
      * @param offset
@@ -117,20 +122,20 @@ public class VoterGroupDao extends GenericDaoImpl<VoterGroup, Long> {
     public EntitiesList<VoterGroup> findVoterGroups(Long voterId, Integer findWho, Integer offset, Integer base, String order) throws DaoException, InputException {
         try {
             initializationSearch();
-            if(!(0 <= findWho && findWho <= 2)){
+            if (!(0 <= findWho && findWho <= 2)) {
                 throw new InputException("Neplatná hodnota pro findWho param. \n0 - není členem ani supervisorem skupiny\n1 - je členem skupiny\n2 - je supervisorem skupiny");
             }
-            if(findWho == 0){
-                Expression<List<Voter>> voters= root.get("voters");
+            if (findWho == 0) {
+                Expression<List<Voter>> voters = root.get("voters");
                 Expression<Voter> supervisor = root.get("supervisor");
                 Voter voter = em.find(Voter.class, voterId);
-                cq.where(cb.and(cb.not(cb.isMember(voter, voters)), cb.not(cb.equal(supervisor,voter))));
+                cq.where(cb.and(cb.not(cb.isMember(voter, voters)), cb.not(cb.equal(supervisor, voter))));
             }
-            if(findWho == 1){
+            if (findWho == 1) {
                 Expression<Long> voter = root.join("voters").get("id");
                 cq.where(cb.equal(voter, voterId));
             }
-            if(findWho == 2){
+            if (findWho == 2) {
                 Expression<Long> supervisor = root.get("supervisor").get("id");
                 cq.where(cb.equal(supervisor, voterId));
             }
@@ -161,10 +166,10 @@ public class VoterGroupDao extends GenericDaoImpl<VoterGroup, Long> {
             poll.setVoterGroup(voterGroup);
             em.persist(poll);
             Iterator<Voter> it = voterGroup.getVoters().iterator();
-            while (it.hasNext()){
+            while (it.hasNext()) {
                 Voter voter = it.next();
                 Ballot ballot = new Ballot();
-                ballot.setAnswer(0L);
+                ballot.setAnswer(null);
                 ballot.setPoll(poll);
                 ballot.setVoter(voter);
                 em.persist(ballot);

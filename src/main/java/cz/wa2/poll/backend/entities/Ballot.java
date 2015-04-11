@@ -20,7 +20,7 @@ public class Ballot {
             CascadeType.MERGE})
     private Voter voter;
 
-    private Long answer;
+    private Integer answer;
 
     public Poll getPoll() {
         return poll;
@@ -46,11 +46,11 @@ public class Ballot {
         this.id = id;
     }
 
-    public Long getAnswer() {
+    public Integer getAnswer() {
         return answer;
     }
 
-    public void setAnswer(Long answer) {
+    public void setAnswer(Integer answer) {
         this.answer = answer;
     }
 
