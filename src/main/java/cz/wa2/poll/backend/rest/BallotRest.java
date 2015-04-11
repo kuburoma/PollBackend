@@ -19,7 +19,7 @@ import javax.ws.rs.core.Response;
 public class BallotRest {
 
     ConvertorDTO convertorDTO = new ConvertorDTO();
-    BallotDao ballotDao = new BallotDao();
+    BallotDao dao = new BallotDao();
 
 
     @GET
@@ -28,9 +28,9 @@ public class BallotRest {
             @QueryParam("base") Integer base,
             @QueryParam("order") String order) {
         try {
-            EntitiesList<Ballot> ballotEntitiesList = ballotDao.findAll(offset, base, order);
+            EntitiesList<Ballot> entitiesList = dao.findAll(offset, base, order);
 
-            return Response.status(Response.Status.OK).header("Count-records", ballotEntitiesList.getTotalSize()).entity(convertorDTO.convertBallotToDTO(ballotEntitiesList.getEntities())).build();
+            return Response.status(Response.Status.OK).header("Count-records", entitiesList.getTotalSize()).entity(convertorDTO.convertBallotToDTO(entitiesList.getEntities())).build();
         } catch (DaoException e) {
             e.printStackTrace();
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
@@ -44,7 +44,7 @@ public class BallotRest {
     @Path(value = "/{id}")
     public Response getVoter(@PathParam("id") Long id) {
         try {
-            return Response.status(Response.Status.OK).entity(new BallotDTO(ballotDao.find(id))).build();
+            return Response.status(Response.Status.OK).entity(new BallotDTO(dao.find(id))).build();
         } catch (DaoException e) {
             e.printStackTrace();
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
@@ -54,7 +54,7 @@ public class BallotRest {
     @POST
     public Response saveVoter(BallotDTO ballotDTO) {
         try {
-            return Response.status(Response.Status.OK).entity(new BallotDTO(ballotDao.create(ballotDTO.toEntity()))).build();
+            return Response.status(Response.Status.OK).entity(new BallotDTO(dao.create(ballotDTO.toEntity()))).build();
         } catch (DaoException e) {
             e.printStackTrace();
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
@@ -65,7 +65,7 @@ public class BallotRest {
     @PUT
     public Response updateBallot(BallotDTO ballotDTO) {
         try {
-            ballotDao.update(ballotDTO.toEntity());
+            dao.update(ballotDTO.toEntity());
         } catch (DaoException e) {
             e.printStackTrace();
         }
@@ -76,7 +76,7 @@ public class BallotRest {
     @Path(value = "/{id}")
     public Response deleteBallot(@PathParam("id") Long id) {
         try {
-            ballotDao.delete(id);
+            dao.delete(id);
             return Response.status(Response.Status.OK).build();
         } catch (DaoException e) {
             e.printStackTrace();

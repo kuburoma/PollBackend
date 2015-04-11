@@ -73,7 +73,6 @@ public class VoterDao extends GenericDaoImpl<Voter, Long> {
      * Vr
      *
      * @param id
-     * @param voted
      * @param offset
      * @param base
      * @param order
@@ -81,7 +80,7 @@ public class VoterDao extends GenericDaoImpl<Voter, Long> {
      * @throws DaoException
      * @throws InputException
      */
-    public EntitiesList<Voter> findVotersOfVoterGroup(Long id, Boolean voted, Integer offset, Integer base, String order) throws DaoException, InputException {
+    public EntitiesList<Voter> findVotersOfVoterGroup(Long id, Integer offset, Integer base, String order) throws DaoException, InputException {
         try {
             initializationSearch();
 

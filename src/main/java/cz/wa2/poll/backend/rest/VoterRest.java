@@ -7,8 +7,12 @@ import cz.wa2.poll.backend.dao.VoterGroupDao;
 import cz.wa2.poll.backend.dto.BallotDTO;
 import cz.wa2.poll.backend.dto.ConvertorDTO;
 import cz.wa2.poll.backend.dto.VoterDTO;
+import cz.wa2.poll.backend.entities.EntitiesList;
+import cz.wa2.poll.backend.entities.Poll;
 import cz.wa2.poll.backend.entities.Voter;
+import cz.wa2.poll.backend.entities.VoterGroup;
 import cz.wa2.poll.backend.exception.DaoException;
+import cz.wa2.poll.backend.exception.InputException;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -21,95 +25,109 @@ import javax.ws.rs.core.Response;
 public class VoterRest {
 
     ConvertorDTO convertorDTO = new ConvertorDTO();
-    VoterDao vd = new VoterDao();
+    VoterDao dao = new VoterDao();
     VoterGroupDao voterGroupDao = new VoterGroupDao();
     PollDao pollDao = new PollDao();
     BallotDao ballotDao = new BallotDao();
 
-/*    @GET
-    public Response getVoters() {
+    @GET
+    public Response getVoterGroups(@QueryParam("offset") Integer offset,
+                                   @QueryParam("base") Integer base,
+                                   @QueryParam("order") String order) {
         try {
-            VoterDao vd = new VoterDao();
-            return Response.status(Response.Status.OK).entity(convertorDTO.convertVoterToDTO(vd.findAll(null, null))).build();
+            EntitiesList<Voter> entitiesList = dao.findAll(offset, base, order);
+            return Response.status(Response.Status.OK).header("Count-records", entitiesList.getTotalSize()).entity(convertorDTO.convertVoterToDTO(entitiesList.getEntities())).build();
         } catch (DaoException e) {
             e.printStackTrace();
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        } catch (InputException e) {
+            e.printStackTrace();
+            return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
         }
-    }*/
+    }
 
     @GET
     @Path(value = "/{id}")
     public Response getVoter(@PathParam("id") Long id) {
         try {
-            return Response.status(Response.Status.OK).entity(new VoterDTO(vd.find(id))).build();
+            return Response.status(Response.Status.OK).entity(new VoterDTO(dao.find(id))).build();
         } catch (DaoException e) {
             e.printStackTrace();
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         }
     }
 
-/*
+
+    /**
+     * Vrati skupinu vzhledem ke vztahu k voterovy a to dle findWho
+     * 0 - Neni ani clenem ci supervisorem skupiny.
+     * 1 - Je clenem skupiny
+     * 2 - Je supervisorem skupiny
+     *
+     * @param id
+     * @param findWho
+     * @param offset
+     * @param base
+     * @param order
+     * @return
+     */
     @GET
-    @Path(value = "/{id}/supervised_groups")
-    public Response getSupervisedGroups(@PathParam("id") Long id) {
+    @Path(value = "/{id}/group")
+    public Response getVoterGroups(@PathParam("id") Long id,
+                                   @QueryParam("findWho") Integer findWho,
+                                   @QueryParam("offset") Integer offset,
+                                   @QueryParam("base") Integer base,
+                                   @QueryParam("order") String order) {
         try {
-            return Response.status(Response.Status.OK).entity(convertorDTO.convertVoterGroupToDTO(voterGroupDao.getSupervisedGroups(id))).build();
+            EntitiesList<VoterGroup> entitiesList = voterGroupDao.findVoterGroups(id, findWho, offset, base, order);
+            return Response.status(Response.Status.OK).header("Count-records", entitiesList.getTotalSize()).entity(convertorDTO.convertVoterGroupToDTO(entitiesList.getEntities())).build();
         } catch (DaoException e) {
             e.printStackTrace();
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        } catch (InputException e) {
+            e.printStackTrace();
+            return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
         }
     }
 
     @GET
-    @Path(value = "/{id}/registred_groups")
-    public Response getRegistredGroups(@PathParam("id") Long id) {
+    @Path(value = "/{id}/poll")
+    public Response getPolls(@PathParam("id") Long id,
+                             @QueryParam("voted") Boolean voted,
+                             @QueryParam("offset") Integer offset,
+                             @QueryParam("base") Integer base,
+                             @QueryParam("order") String order) {
         try {
-            return Response.status(Response.Status.OK).entity(convertorDTO.convertVoterGroupToDTO(voterGroupDao.getVoterGroupsWithVoter(id))).build();
+            EntitiesList<Poll> entitiesList = pollDao.findUserPolls(id, voted, offset, base, order);
+            return Response.status(Response.Status.OK).header("Count-records", entitiesList.getTotalSize()).entity(convertorDTO.convertPollToDTO(entitiesList.getEntities())).build();
         } catch (DaoException e) {
             e.printStackTrace();
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        } catch (InputException e) {
+            e.printStackTrace();
+            return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
         }
     }
 
-    @GET
-    @Path(value = "/{id}/notregistred_groups")
-    public Response getNotregistredGroups(@PathParam("id") Long id) {
-        try {
-            return Response.status(Response.Status.OK).entity(convertorDTO.convertVoterGroupToDTO(voterGroupDao.getVoterGroupsWithoutVoter(id))).build();
-        } catch (DaoException e) {
-            e.printStackTrace();
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
-        }
-    }
 
     @GET
-    @Path(value = "/{id}/nonvoted_polls")
-    public Response getNonvotedPolls(@PathParam("id") Long id) {
+    @Path(value = "/{voter}/poll/{poll}/ballot")
+    public Response getBallot(@PathParam("voter") Long voterId,
+                              @PathParam("poll") Long pollId) {
         try {
-            return Response.status(Response.Status.OK).entity(convertorDTO.convertPollToDTO(pollDao.getNonvotedPolls(id))).build();
+            return Response.status(Response.Status.OK).entity(new BallotDTO(ballotDao.findBallot(voterId, pollId))).build();
         } catch (DaoException e) {
             e.printStackTrace();
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         }
     }
-
-    @GET
-    @Path(value = "/{id}/voted_polls")
-    public Response getVotedPolls(@PathParam("id") Long id) {
-        try {
-            return Response.status(Response.Status.OK).entity(convertorDTO.convertPollToDTO(pollDao.getVotedPolls(id))).build();
-        } catch (DaoException e) {
-            e.printStackTrace();
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
-        }
-    }
-*/
 
     @GET
     @Path(value = "/login")
-    public Response getLogin(@QueryParam("email") String email, @QueryParam("password") String password) {
+    public Response getLogin(@QueryParam("email") String email,
+                             @QueryParam("password") String password) {
         try {
-            Voter voter = vd.findVoterByEmail(email);
+            Voter voter = dao.findVoterByEmail(email);
 
             if (voter != null && voter.getPassword().equals(password)) {
                 return Response.status(Response.Status.OK).entity(new VoterDTO(voter)).build();
@@ -125,11 +143,11 @@ public class VoterRest {
     @POST
     public Response saveVoter(VoterDTO voter) {
         try {
-            Voter voterByEmail = vd.findVoterByEmail(voter.getEmail());
+            Voter voterByEmail = dao.findVoterByEmail(voter.getEmail());
             if (voterByEmail == null) {
-                return Response.status(Response.Status.OK).entity(new VoterDTO(vd.create(voter.toEntity()))).build();
+                return Response.status(Response.Status.OK).entity(new VoterDTO(dao.create(voter.toEntity()))).build();
             } else {
-                return Response.status(Response.Status.CONFLICT).entity("Email already exist").build();
+                return Response.status(Response.Status.BAD_REQUEST).entity("Email already exist").build();
             }
         } catch (DaoException e) {
             e.printStackTrace();
@@ -137,23 +155,17 @@ public class VoterRest {
         }
     }
 
-    @GET
-    @Path(value = "/{voter}/poll/{poll}/ballot")
-    public Response updateBallot(@PathParam("voter") Long voterId, @PathParam("poll") Long pollId, BallotDTO ballot) {
+    @PUT
+    public Response updateVoter(VoterDTO voter) {
         try {
-            return Response.status(Response.Status.OK).entity(new BallotDTO(ballotDao.findBallot(voterId, pollId))).build();
+            VoterDao dao = new VoterDao();
+            dao.update(voter.toEntity());
+            return Response.status(Response.Status.OK).build();
         } catch (DaoException e) {
             e.printStackTrace();
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         }
     }
-
-/*    @PUT
-    public Response updateVoter(VoterDTO voter) {
-        VoterDao vd = new VoterDao();
-        vd.update(voter.toEntity());
-        return Response.status(Response.Status.OK).build();
-    }*/
 
     @DELETE
     @Path(value = "/{id}")
