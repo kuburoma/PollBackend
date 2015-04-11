@@ -13,6 +13,7 @@ import cz.wa2.poll.backend.entities.Voter;
 import cz.wa2.poll.backend.entities.VoterGroup;
 import cz.wa2.poll.backend.exception.DaoException;
 import cz.wa2.poll.backend.exception.InputException;
+import org.apache.commons.lang.StringUtils;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -143,14 +144,29 @@ public class VoterRest {
     @POST
     public Response saveVoter(VoterDTO voter) {
         try {
-            Voter voterByEmail = dao.findVoterByEmail(voter.getEmail());
-            if (voterByEmail == null) {
-                return Response.status(Response.Status.OK).entity(new VoterDTO(dao.create(voter.toEntity()))).build();
-            } else {
-                return Response.status(Response.Status.BAD_REQUEST).entity("Email already exist").build();
+            if(!testMinLength(voter.getFirstName(), 4)){
+                return Response.status(Response.Status.BAD_REQUEST).entity("Křestní jméno musí mít minimálně délku 4.").build();
             }
+            if(!testMinLength(voter.getLastName(), 4)){
+                return Response.status(Response.Status.BAD_REQUEST).entity("Příjmení musí mít minimálně délku 4.").build();
+            }
+            if(!testMinLength(voter.getEmail(), 4)){
+                return Response.status(Response.Status.BAD_REQUEST).entity("Email musí mít minimálně délku 4.").build();
+            }
+            if(!testMinLength(voter.getPassword(), 4)){
+                return Response.status(Response.Status.BAD_REQUEST).entity("Heslo musí mít minimálně délku 4.").build();
+            }
+            Voter voterByEmail = dao.findVoterByEmail(voter.getEmail());
+
+            if (voterByEmail != null) {
+                throw new InputException("Email je již používán");
+            }
+            return Response.status(Response.Status.OK).entity(new VoterDTO(dao.create(voter.toEntity()))).build();
         } catch (DaoException e) {
             e.printStackTrace();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        } catch (InputException e) {
+            // TODO
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -178,5 +194,15 @@ public class VoterRest {
             e.printStackTrace();
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         }
+    }
+
+    private boolean testMinLength(String string, int length){
+        if(string == null){
+            return false;
+        }
+        if(string.length() < length){
+            return false;
+        }
+        return true;
     }
 }

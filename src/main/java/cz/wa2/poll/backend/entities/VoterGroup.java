@@ -18,15 +18,18 @@ public class VoterGroup {
     @ManyToOne
     private Voter supervisor;
 
-    @ManyToMany(cascade = {CascadeType.ALL})
+    @ManyToMany(cascade = {
+            CascadeType.PERSIST,
+            CascadeType.REFRESH,
+            CascadeType.MERGE})
     @JoinTable(
-            name="voter_votergroup",
-            joinColumns=@JoinColumn(name="voutergroup_id"),
-            inverseJoinColumns=@JoinColumn(name="voter_id")
+            name = "voter_votergroup",
+            joinColumns = @JoinColumn(name = "voutergroup_id"),
+            inverseJoinColumns = @JoinColumn(name = "voter_id")
     )
     private List<Voter> voters;
 
-    @OneToMany(mappedBy = "voterGroup")
+    @OneToMany(mappedBy = "voterGroup",cascade = {CascadeType.ALL})
     private List<Poll> polls;
 
     public Long getId() {
@@ -66,8 +69,8 @@ public class VoterGroup {
     }
 
     @Transient
-    public void addVoter(Voter voter){
-        if(this.voters == null){
+    public void addVoter(Voter voter) {
+        if (this.voters == null) {
             this.voters = new ArrayList<Voter>();
         }
         this.voters.add(voter);
@@ -88,8 +91,8 @@ public class VoterGroup {
     @Override
     public String toString() {
         StringBuffer sb = new StringBuffer();
-        sb.append("Name: "+name+"\n");
-        sb.append("Description: "+description+"\n");
+        sb.append("Name: " + name + "\n");
+        sb.append("Description: " + description + "\n");
         return sb.toString();
     }
 }

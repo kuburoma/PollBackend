@@ -144,6 +144,7 @@ public class GenericDaoImpl<T, PK extends Serializable> implements GenericDao<T,
             em.remove(object);
             tx.commit();
         } catch (PersistenceException e) {
+            e.printStackTrace();
             tx.rollback();
             throw new DaoException("Error when deleting entity", e);
         } finally {

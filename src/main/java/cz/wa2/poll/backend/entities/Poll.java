@@ -15,7 +15,10 @@ public class Poll {
     private String name;
     private String question;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = {
+            CascadeType.PERSIST,
+            CascadeType.REFRESH,
+            CascadeType.MERGE})
     private VoterGroup voterGroup;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "poll")

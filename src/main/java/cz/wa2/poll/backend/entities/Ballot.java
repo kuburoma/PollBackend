@@ -14,7 +14,10 @@ public class Ballot {
     @ManyToOne(cascade = {CascadeType.ALL})
     private Poll poll;
 
-    @ManyToOne(cascade = {CascadeType.ALL})
+    @ManyToOne(cascade = {
+            CascadeType.PERSIST,
+            CascadeType.REFRESH,
+            CascadeType.MERGE})
     private Voter voter;
 
     private Long answer;
