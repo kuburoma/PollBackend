@@ -130,6 +130,17 @@ public class VoterGroupRest {
         }
     }
 
+    @DELETE
+    @Path(value = "/{id}")
+    public Response deletePoll(@PathParam("id") Long id) {
+        try {
+            dao.delete(id);
+            return Response.status(Response.Status.OK).build();
+        } catch (DaoException e) {
+            e.printStackTrace();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        }
+    }
 
     @DELETE
     @Path("/{votergroup}/voter/{voter}")
