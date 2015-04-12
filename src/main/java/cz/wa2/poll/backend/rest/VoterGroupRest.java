@@ -11,10 +11,12 @@ import cz.wa2.poll.backend.dto.VoterGroupDTO;
 import cz.wa2.poll.backend.entities.*;
 import cz.wa2.poll.backend.exception.DaoException;
 import cz.wa2.poll.backend.exception.InputException;
+import cz.wa2.poll.backend.websocket.Producer;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -90,7 +92,11 @@ public class VoterGroupRest {
     public Response createPoll(@PathParam("id") Long id, PollDTO pollDTO) {
         try {
             if (pollDao.findPollByName(pollDTO.getName()) == null) {
-                return Response.status(Response.Status.OK).entity(new PollDTO(dao.createPoll(pollDTO.toEntity(), id))).build();
+                PollDTO dto = new PollDTO(dao.createPoll(pollDTO.toEntity(), id));
+                Producer producer = new Producer("hlasovani");
+                producer.sendMessage("Nové hlasování: "+dto.getName());
+                producer.close();
+                return Response.status(Response.Status.OK).entity(dto).build();
             } else {
                 throw new InputException("Hlasování se stejným jménem již existuje.");
             }
@@ -99,6 +105,9 @@ public class VoterGroupRest {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         } catch (InputException e) {
             return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         }
     }
 

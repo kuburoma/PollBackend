@@ -7,6 +7,7 @@ import cz.wa2.poll.backend.dao.VoterGroupDao;
 import cz.wa2.poll.backend.entities.*;
 import cz.wa2.poll.backend.exception.DaoException;
 import cz.wa2.poll.backend.exception.InputException;
+import cz.wa2.poll.backend.websocket.Producer;
 import org.glassfish.jersey.process.internal.RequestScoped;
 
 import javax.persistence.EntityManager;
