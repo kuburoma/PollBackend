@@ -1,6 +1,5 @@
 package cz.wa2.poll.backend.dto;
 
-import cz.wa2.poll.backend.entities.Voter;
 import cz.wa2.poll.backend.entities.VoterGroup;
 
 public class VoterGroupDTO {

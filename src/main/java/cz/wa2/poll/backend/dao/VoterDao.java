@@ -8,6 +8,7 @@ import cz.wa2.poll.backend.exception.DaoException;
 import cz.wa2.poll.backend.exception.InputException;
 import org.hibernate.Hibernate;
 
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceException;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -34,7 +35,14 @@ public class VoterDao extends GenericDaoImpl<Voter, Long> {
 
             cq.where(cb.equal(root.get("email"), email));
 
-            return em.createQuery(cq).getSingleResult();
+
+            try {
+                return em.createQuery(cq).getSingleResult();
+            } catch (NoResultException e) {
+                return null;
+            }
+
+
         } catch (PersistenceException e) {
             throw new DaoException("Error findVoterByEmail", e);
         } finally {

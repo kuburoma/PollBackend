@@ -19,7 +19,8 @@ public class GenericDaoImpl<T, PK extends Serializable> implements GenericDao<T,
 
     public GenericDaoImpl(Class entityClass) {
         this.entityClass = entityClass;
-        emf = Persistence.createEntityManagerFactory("persist-unit");
+        //emf = Persistence.createEntityManagerFactory("persist-unit");
+        emf = EntityManagerFactoryDao.getEntityManagerFactory();
     }
 
     protected Class entityClass;

@@ -7,6 +7,7 @@ import cz.wa2.poll.backend.dao.VoterGroupDao;
 import cz.wa2.poll.backend.dto.BallotDTO;
 import cz.wa2.poll.backend.dto.ConvertorDTO;
 import cz.wa2.poll.backend.dto.VoterDTO;
+import cz.wa2.poll.backend.dto.VoterGroupDTO;
 import cz.wa2.poll.backend.entities.EntitiesList;
 import cz.wa2.poll.backend.entities.Poll;
 import cz.wa2.poll.backend.entities.Voter;
@@ -94,7 +95,7 @@ public class VoterRest {
     @GET
     @Path(value = "/{id}/poll")
     public Response getPolls(@PathParam("id") Long id,
-                             @QueryParam("voted") Boolean voted,
+                             @QueryParam("voted") Integer voted,
                              @QueryParam("offset") Integer offset,
                              @QueryParam("base") Integer base,
                              @QueryParam("order") String order) {
@@ -141,20 +142,36 @@ public class VoterRest {
         }
     }
 
+
+    @POST
+    @Path(value = "/{id}/group")
+    public Response saveVoterGroup(
+            @PathParam("id") Long voterId,
+            VoterGroupDTO voterGroup) {
+        try {
+            voterGroupDao.create(voterId, voterGroup.toEntity());
+
+            return Response.status(Response.Status.OK).build();
+        } catch (DaoException e) {
+            e.printStackTrace();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
     @POST
     public Response saveVoter(VoterDTO voter) {
         try {
-            if(!testMinLength(voter.getFirstName(), 4)){
-                return Response.status(Response.Status.BAD_REQUEST).entity("Křestní jméno musí mít minimálně délku 4.").build();
+            if (!testMinLength(voter.getFirstName(), 4)) {
+                throw new InputException("Křestní jméno musí mít minimálně délku 4.");
             }
-            if(!testMinLength(voter.getLastName(), 4)){
-                return Response.status(Response.Status.BAD_REQUEST).entity("Příjmení musí mít minimálně délku 4.").build();
+            if (!testMinLength(voter.getLastName(), 4)) {
+                throw new InputException("Příjmení musí mít minimálně délku 4.");
             }
-            if(!testMinLength(voter.getEmail(), 4)){
-                return Response.status(Response.Status.BAD_REQUEST).entity("Email musí mít minimálně délku 4.").build();
+            if (!testMinLength(voter.getEmail(), 4)) {
+                throw new InputException("Email musí mít minimálně délku 4.");
             }
-            if(!testMinLength(voter.getPassword(), 4)){
-                return Response.status(Response.Status.BAD_REQUEST).entity("Heslo musí mít minimálně délku 4.").build();
+            if (!testMinLength(voter.getPassword(), 4)) {
+                throw new InputException("Heslo musí mít minimálně délku 4.");
             }
             Voter voterByEmail = dao.findVoterByEmail(voter.getEmail());
 
@@ -166,7 +183,7 @@ public class VoterRest {
             e.printStackTrace();
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         } catch (InputException e) {
-            return Response.status(Response.Status.BAD_REQUEST).build();
+            return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
         }
     }
 
@@ -195,11 +212,11 @@ public class VoterRest {
         }
     }
 
-    private boolean testMinLength(String string, int length){
-        if(string == null){
+    private boolean testMinLength(String string, int length) {
+        if (string == null) {
             return false;
         }
-        if(string.length() < length){
+        if (string.length() < length) {
             return false;
         }
         return true;
