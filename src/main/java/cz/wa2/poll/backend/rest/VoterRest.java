@@ -149,12 +149,17 @@ public class VoterRest {
             @PathParam("id") Long voterId,
             VoterGroupDTO voterGroup) {
         try {
-            voterGroupDao.create(voterId, voterGroup.toEntity());
-
+            if(voterGroupDao.findVoterGroupByName(voterGroup.getName()) == null){
+                voterGroupDao.create(voterId, voterGroup.toEntity());
+            }else{
+                throw new InputException("Skupina se stejným jménem již existuje.");
+            }
             return Response.status(Response.Status.OK).build();
         } catch (DaoException e) {
             e.printStackTrace();
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        } catch (InputException e) {
+            return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
         }
     }
 

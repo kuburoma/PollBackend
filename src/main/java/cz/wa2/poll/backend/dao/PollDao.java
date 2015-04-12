@@ -1,14 +1,12 @@
 package cz.wa2.poll.backend.dao;
 
-import cz.wa2.poll.backend.entities.Ballot;
-import cz.wa2.poll.backend.entities.EntitiesList;
-import cz.wa2.poll.backend.entities.Poll;
-import cz.wa2.poll.backend.entities.Voter;
+import cz.wa2.poll.backend.entities.*;
 import cz.wa2.poll.backend.exception.DaoException;
 import cz.wa2.poll.backend.exception.InputException;
 import org.hibernate.Criteria;
 
 import javax.management.Query;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceException;
 import javax.persistence.criteria.*;
 import java.util.ArrayList;
@@ -47,6 +45,24 @@ public class PollDao extends GenericDaoImpl<Poll, Long> {
 
         } catch (PersistenceException e) {
             throw new DaoException("Error findUserPolls", e);
+        } finally {
+            em.close();
+        }
+    }
+
+    public Poll findPollByName(String name) throws DaoException {
+        try {
+            initializationSearch();
+
+            cq.where(cb.equal(root.get("name"), name));
+
+            try {
+                return em.createQuery(cq).getSingleResult();
+            } catch (NoResultException e) {
+                return null;
+            }
+        } catch (PersistenceException e) {
+            throw new DaoException("Error findPollByName", e);
         } finally {
             em.close();
         }

@@ -1,6 +1,7 @@
 package cz.wa2.poll.backend.rest;
 
 import cz.wa2.poll.backend.dao.BallotDao;
+import cz.wa2.poll.backend.dao.PollDao;
 import cz.wa2.poll.backend.dao.VoterDao;
 import cz.wa2.poll.backend.dao.VoterGroupDao;
 import cz.wa2.poll.backend.dto.ConvertorDTO;
@@ -20,17 +21,18 @@ import java.util.List;
 
 @Path("/votergroup")
 @Consumes({MediaType.APPLICATION_JSON})
-@Produces(MediaType.APPLICATION_JSON+ "; charset=UTF-8")
+@Produces(MediaType.APPLICATION_JSON + "; charset=UTF-8")
 public class VoterGroupRest {
 
     ConvertorDTO convertorDTO = new ConvertorDTO();
     VoterGroupDao dao = new VoterGroupDao();
     VoterDao voterDao = new VoterDao();
+    PollDao pollDao = new PollDao();
 
     @GET
     public Response getVoterGroups(@QueryParam("offset") Integer offset,
-                             @QueryParam("base") Integer base,
-                             @QueryParam("order") String order) {
+                                   @QueryParam("base") Integer base,
+                                   @QueryParam("order") String order) {
         try {
             EntitiesList<VoterGroup> entitiesList = dao.findAll(offset, base, order);
             return Response.status(Response.Status.OK).header("Count-records", entitiesList.getTotalSize()).entity(convertorDTO.convertVoterGroupToDTO(entitiesList.getEntities())).build();
@@ -87,10 +89,16 @@ public class VoterGroupRest {
     @Path("/{id}/poll")
     public Response createPoll(@PathParam("id") Long id, PollDTO pollDTO) {
         try {
-            return Response.status(Response.Status.OK).entity(new PollDTO(dao.createPoll(pollDTO.toEntity(), id))).build();
+            if (pollDao.findPollByName(pollDTO.getName()) == null) {
+                return Response.status(Response.Status.OK).entity(new PollDTO(dao.createPoll(pollDTO.toEntity(), id))).build();
+            } else {
+                throw new InputException("Hlasování se stejným jménem již existuje.");
+            }
         } catch (DaoException e) {
             e.printStackTrace();
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        } catch (InputException e) {
+            return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
         }
     }
 

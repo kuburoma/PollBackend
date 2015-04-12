@@ -5,6 +5,7 @@ import cz.wa2.poll.backend.exception.DaoException;
 import cz.wa2.poll.backend.exception.InputException;
 import org.hibernate.Hibernate;
 
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceException;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -179,6 +180,24 @@ public class VoterGroupDao extends GenericDaoImpl<VoterGroup, Long> {
         } catch (PersistenceException e) {
             tx.rollback();
             throw new DaoException("Error createPoll", e);
+        } finally {
+            em.close();
+        }
+    }
+
+    public VoterGroup findVoterGroupByName(String name) throws DaoException {
+        try {
+            initializationSearch();
+
+            cq.where(cb.equal(root.get("name"), name));
+
+            try {
+                return em.createQuery(cq).getSingleResult();
+            } catch (NoResultException e) {
+                return null;
+            }
+        } catch (PersistenceException e) {
+            throw new DaoException("Error findVoterGroupByName", e);
         } finally {
             em.close();
         }

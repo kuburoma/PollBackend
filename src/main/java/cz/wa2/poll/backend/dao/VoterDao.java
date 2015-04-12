@@ -35,14 +35,11 @@ public class VoterDao extends GenericDaoImpl<Voter, Long> {
 
             cq.where(cb.equal(root.get("email"), email));
 
-
             try {
                 return em.createQuery(cq).getSingleResult();
             } catch (NoResultException e) {
                 return null;
             }
-
-
         } catch (PersistenceException e) {
             throw new DaoException("Error findVoterByEmail", e);
         } finally {
