@@ -15,6 +15,7 @@ import cz.wa2.poll.backend.entities.VoterGroup;
 import cz.wa2.poll.backend.exception.DaoException;
 import cz.wa2.poll.backend.exception.InputException;
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -26,6 +27,7 @@ import javax.ws.rs.core.Response;
 @Produces(MediaType.APPLICATION_JSON + "; charset=UTF-8")
 public class VoterRest {
 
+    final static Logger logger = Logger.getLogger(VoterGroupRest.class);
     ConvertorDTO convertorDTO = new ConvertorDTO();
     VoterDao dao = new VoterDao();
     VoterGroupDao voterGroupDao = new VoterGroupDao();
@@ -33,17 +35,21 @@ public class VoterRest {
     BallotDao ballotDao = new BallotDao();
 
     @GET
-    public Response getVoterGroups(@QueryParam("offset") Integer offset,
+    public Response getVoters(@QueryParam("offset") Integer offset,
                                    @QueryParam("base") Integer base,
                                    @QueryParam("order") String order) {
         try {
+            debugMessage("getVoters: Received");
             EntitiesList<Voter> entitiesList = dao.findAll(offset, base, order);
+            debugMessage("getVoters: 200");
             return Response.status(Response.Status.OK).header("Count-records", entitiesList.getTotalSize()).entity(convertorDTO.convertVoterToDTO(entitiesList.getEntities())).build();
         } catch (DaoException e) {
             e.printStackTrace();
+            debugMessage("getVoters: 500");
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         } catch (InputException e) {
             e.printStackTrace();
+            debugMessage("getVoters: 400");
             return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
         }
     }
@@ -52,9 +58,13 @@ public class VoterRest {
     @Path(value = "/{id}")
     public Response getVoter(@PathParam("id") Long id) {
         try {
-            return Response.status(Response.Status.OK).entity(new VoterDTO(dao.find(id))).build();
+            debugMessage("getVoter: Received");
+            VoterDTO object = new VoterDTO(dao.find(id));
+            debugMessage("getVoter: 200");
+            return Response.status(Response.Status.OK).entity(object).build();
         } catch (DaoException e) {
             e.printStackTrace();
+            debugMessage("getVoter: 500");
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -81,13 +91,17 @@ public class VoterRest {
                                    @QueryParam("base") Integer base,
                                    @QueryParam("order") String order) {
         try {
+            debugMessage("getVoterGroups: Received");
             EntitiesList<VoterGroup> entitiesList = voterGroupDao.findVoterGroups(id, findWho, offset, base, order);
+            debugMessage("getVoterGroups: 200");
             return Response.status(Response.Status.OK).header("Count-records", entitiesList.getTotalSize()).entity(convertorDTO.convertVoterGroupToDTO(entitiesList.getEntities())).build();
         } catch (DaoException e) {
             e.printStackTrace();
+            debugMessage("getVoterGroups: 500");
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         } catch (InputException e) {
             e.printStackTrace();
+            debugMessage("getVoterGroups: 400");
             return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
         }
     }
@@ -100,13 +114,17 @@ public class VoterRest {
                              @QueryParam("base") Integer base,
                              @QueryParam("order") String order) {
         try {
+            debugMessage("getPolls: Received");
             EntitiesList<Poll> entitiesList = pollDao.findUserPolls(id, voted, offset, base, order);
+            debugMessage("getPolls: 200");
             return Response.status(Response.Status.OK).header("Count-records", entitiesList.getTotalSize()).entity(convertorDTO.convertPollToDTO(entitiesList.getEntities())).build();
         } catch (DaoException e) {
             e.printStackTrace();
+            debugMessage("getPolls: 500");
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         } catch (InputException e) {
             e.printStackTrace();
+            debugMessage("getPolls: 400");
             return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
         }
     }
@@ -117,9 +135,13 @@ public class VoterRest {
     public Response getBallot(@PathParam("voter") Long voterId,
                               @PathParam("poll") Long pollId) {
         try {
-            return Response.status(Response.Status.OK).entity(new BallotDTO(ballotDao.findBallot(voterId, pollId))).build();
+            debugMessage("getBallot: Received");
+            BallotDTO object = new BallotDTO(ballotDao.findBallot(voterId, pollId));
+            debugMessage("getBallot: 200");
+            return Response.status(Response.Status.OK).entity(object).build();
         } catch (DaoException e) {
             e.printStackTrace();
+            debugMessage("getBallot: 500");
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -129,15 +151,19 @@ public class VoterRest {
     public Response getLogin(@QueryParam("email") String email,
                              @QueryParam("password") String password) {
         try {
+            debugMessage("getLogin: Received");
             Voter voter = dao.findVoterByEmail(email);
 
             if (voter != null && voter.getPassword().equals(password)) {
+                debugMessage("getLogin: 200");
                 return Response.status(Response.Status.OK).entity(new VoterDTO(voter)).build();
             } else {
+                debugMessage("getLogin: 401");
                 return Response.status(Response.Status.UNAUTHORIZED).build();
             }
         } catch (DaoException e) {
             e.printStackTrace();
+            debugMessage("getLogin: 500");
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -149,16 +175,21 @@ public class VoterRest {
             @PathParam("id") Long voterId,
             VoterGroupDTO voterGroup) {
         try {
+            debugMessage("saveVoterGroup: Received");
             if(voterGroupDao.findVoterGroupByName(voterGroup.getName()) == null){
                 voterGroupDao.create(voterId, voterGroup.toEntity());
             }else{
                 throw new InputException("Skupina se stejným jménem již existuje.");
             }
+            debugMessage("saveVoterGroup: 200");
             return Response.status(Response.Status.OK).build();
         } catch (DaoException e) {
             e.printStackTrace();
+            debugMessage("saveVoterGroup: 500");
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         } catch (InputException e) {
+            e.printStackTrace();
+            debugMessage("saveVoterGroup: 400");
             return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
         }
     }
@@ -166,6 +197,7 @@ public class VoterRest {
     @POST
     public Response saveVoter(VoterDTO voter) {
         try {
+            debugMessage("saveVoter: Received");
             if (!testMinLength(voter.getFirstName(), 4)) {
                 throw new InputException("Křestní jméno musí mít minimálně délku 4.");
             }
@@ -186,8 +218,11 @@ public class VoterRest {
             return Response.status(Response.Status.OK).entity(new VoterDTO(dao.create(voter.toEntity()))).build();
         } catch (DaoException e) {
             e.printStackTrace();
+            debugMessage("saveVoter: 500");
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         } catch (InputException e) {
+            e.printStackTrace();
+            debugMessage("saveVoter: 400");
             return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
         }
     }
@@ -195,11 +230,14 @@ public class VoterRest {
     @PUT
     public Response updateVoter(VoterDTO voter) {
         try {
+            debugMessage("updateVoter: Received");
             VoterDao dao = new VoterDao();
             dao.update(voter.toEntity());
+            debugMessage("updateVoter: 200");
             return Response.status(Response.Status.OK).build();
         } catch (DaoException e) {
             e.printStackTrace();
+            debugMessage("updateVoter: 500");
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -208,11 +246,14 @@ public class VoterRest {
     @Path(value = "/{id}")
     public Response deleteVoter(@PathParam("id") Long id) {
         try {
+            debugMessage("deleteVoter: Received");
             VoterDao vd = new VoterDao();
             vd.delete(id);
+            debugMessage("deleteVoter: 200");
             return Response.status(Response.Status.OK).build();
         } catch (DaoException e) {
             e.printStackTrace();
+            debugMessage("deleteVoter: 500");
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -225,5 +266,11 @@ public class VoterRest {
             return false;
         }
         return true;
+    }
+
+    private void debugMessage(String message){
+        if (logger.isDebugEnabled()) {
+            logger.debug(message);
+        }
     }
 }
