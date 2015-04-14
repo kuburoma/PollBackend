@@ -109,6 +109,9 @@ public class VoterGroupRest {
     public Response createPoll(@PathParam("id") Long id, PollDTO pollDTO) {
         try {
             debugMessage("createPoll: Received");
+            if(voterDao.findVotersOfVoterGroup(id,null,null,null).getEntities().size() < 1 ){
+                throw new InputException("Hlasování by nemělo žádné členy");
+            }
             if (pollDao.findPollByName(pollDTO.getName()) == null) {
                 PollDTO dto = new PollDTO(dao.createPoll(pollDTO.toEntity(), id));
                 Producer producer = new Producer("hlasovani");
@@ -117,7 +120,6 @@ public class VoterGroupRest {
                 debugMessage("createPoll: 200");
                 return Response.status(Response.Status.OK).entity(dto).build();
             } else {
-                debugMessage("createPoll: 400");
                 throw new InputException("Hlasování se stejným jménem již existuje.");
             }
         } catch (DaoException e) {
