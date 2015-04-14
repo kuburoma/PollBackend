@@ -45,6 +45,9 @@ public class VoterGroupDTO {
         VoterGroup voterGroup = new VoterGroup();
         voterGroup.setName(this.getName());
         voterGroup.setDescription(this.getDescription());
+        if(this.id != null){
+            voterGroup.setId(this.getId());
+        }
         return voterGroup;
     }
 

@@ -140,17 +140,24 @@ public class VoterGroupRest {
     @Path("/{id}")
     public Response updateVoterGroup(@PathParam("id") Long id, VoterGroupDTO voterGroupDTO) {
         try {
+            VoterGroup help = dao.findVoterGroupByName(voterGroupDTO.getName());
+            if( help != null){
+                if(help.getId() != id){
+                    throw new InputException("Skupina se stejným jménem již existuje.");
+                }
+            }
             debugMessage("updateVoterGroup: Received");
-            VoterGroup vg = dao.find(id);
-            vg.setName(voterGroupDTO.getName());
-            vg.setDescription(voterGroupDTO.getDescription());
-            dao.update(vg);
+            dao.update(voterGroupDTO.toEntity());
             debugMessage("updateVoterGroup: 200");
             return Response.status(Response.Status.OK).build();
         } catch (DaoException e) {
             e.printStackTrace();
             debugMessage("updateVoterGroup: 500");
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        } catch (InputException e) {
+            e.printStackTrace();
+            debugMessage("updateVoterGroup: 400");
+            return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
         }
     }
 

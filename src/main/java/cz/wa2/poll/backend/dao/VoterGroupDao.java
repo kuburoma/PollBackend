@@ -203,4 +203,30 @@ public class VoterGroupDao extends GenericDaoImpl<VoterGroup, Long> {
         }
     }
 
+    /**
+     * Upravení existující entity
+     *
+     * @param object
+     * @throws DaoException
+     */
+    @Override
+    public void update(VoterGroup object) throws DaoException {
+        em = emf.createEntityManager();
+        try {
+            VoterGroup save = em.find(VoterGroup.class, object.getId());
+            save.setName(object.getName());
+            save.setDescription(object.getDescription());
+            tx = em.getTransaction();
+            tx.begin();
+            em.merge(save);
+            tx.commit();
+        } catch (PersistenceException e) {
+            e.printStackTrace();
+            tx.rollback();
+            throw new DaoException("Error when updating entity", e);
+        } finally {
+            em.close();
+        }
+    }
+
 }
