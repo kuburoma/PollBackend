@@ -231,7 +231,10 @@ public class VoterRest {
     public Response updateVoter(VoterDTO voter) {
         try {
             debugMessage("updateVoter: Received");
-            VoterDao dao = new VoterDao();
+            Voter help = dao.findVoterByEmail(voter.getEmail());
+            if(help != null && help.getId() == voter.getId()){
+                throw new InputException("Uživatel s tímto emailem již existuje");
+            }
             dao.update(voter.toEntity());
             debugMessage("updateVoter: 200");
             return Response.status(Response.Status.OK).build();
@@ -239,6 +242,10 @@ public class VoterRest {
             e.printStackTrace();
             debugMessage("updateVoter: 500");
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        } catch (InputException e) {
+            e.printStackTrace();
+            debugMessage("updateVoter: 400");
+            return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
         }
     }
 

@@ -1,10 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="bd079c8e-3e6d-4d03-a235-4711af948fff" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/cz/wa2/poll/backend/dto/VoterGroupDTO.java" afterPath="$PROJECT_DIR$/src/main/java/cz/wa2/poll/backend/dto/VoterGroupDTO.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/cz/wa2/poll/backend/dao/VoterGroupDao.java" afterPath="$PROJECT_DIR$/src/main/java/cz/wa2/poll/backend/dao/VoterGroupDao.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/cz/wa2/poll/backend/rest/VoterGroupRest.java" afterPath="$PROJECT_DIR$/src/main/java/cz/wa2/poll/backend/rest/VoterGroupRest.java" />
+    <list default="true" id="bd079c8e-3e6d-4d03-a235-4711af948fff" name="Default" comment="Úprava VoterGroup.">
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/cz/wa2/poll/backend/rest/VoterRest.java" afterPath="$PROJECT_DIR$/src/main/java/cz/wa2/poll/backend/rest/VoterRest.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="VolbyWA2.iws" />
@@ -68,11 +66,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="VoterGroupRest.java" pinned="false" current-in-tab="true">
+      <file leaf-file-name="VoterGroupRest.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/cz/wa2/poll/backend/rest/VoterGroupRest.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.7313131" vertical-offset="1780" max-vertical-offset="3400">
-              <caret line="146" column="17" selection-start-line="146" selection-start-column="17" selection-end-line="146" selection-end-column="17" />
+            <state vertical-scroll-proportion="0.0" vertical-offset="862" max-vertical-offset="3400">
+              <caret line="156" column="21" selection-start-line="156" selection-start-column="21" selection-end-line="156" selection-end-column="21" />
               <folding />
             </state>
           </provider>
@@ -91,8 +89,28 @@
       <file leaf-file-name="VoterRest.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/cz/wa2/poll/backend/rest/VoterRest.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="2305" max-vertical-offset="4471">
-              <caret line="178" column="0" selection-start-line="178" selection-start-column="0" selection-end-line="182" selection-end-column="13" />
+            <state vertical-scroll-proportion="0.0" vertical-offset="2023" max-vertical-offset="4590">
+              <caret line="239" column="58" selection-start-line="239" selection-start-column="58" selection-end-line="239" selection-end-column="58" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="VoterDao.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/cz/wa2/poll/backend/dao/VoterDao.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0" vertical-offset="454" max-vertical-offset="1615">
+              <caret line="81" column="18" selection-start-line="81" selection-start-column="18" selection-end-line="81" selection-end-column="18" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="BallotRest.java" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/main/java/cz/wa2/poll/backend/rest/BallotRest.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.725" vertical-offset="1224" max-vertical-offset="1904">
+              <caret line="112" column="0" selection-start-line="112" selection-start-column="0" selection-end-line="112" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -151,11 +169,11 @@
         <option value="$PROJECT_DIR$/src/main/java/cz/wa2/poll/backend/rest/PollRest.java" />
         <option value="$PROJECT_DIR$/src/main/resources/META-INF/persistence.xml" />
         <option value="$PROJECT_DIR$/web/WEB-INF/classes/log4j.properties" />
-        <option value="$PROJECT_DIR$/src/main/java/cz/wa2/poll/backend/rest/VoterRest.java" />
         <option value="$PROJECT_DIR$/src/main/java/cz/wa2/poll/backend/dao/PollDao.java" />
         <option value="$PROJECT_DIR$/src/main/java/cz/wa2/poll/backend/dao/VoterGroupDao.java" />
         <option value="$PROJECT_DIR$/src/main/java/cz/wa2/poll/backend/dto/VoterGroupDTO.java" />
         <option value="$PROJECT_DIR$/src/main/java/cz/wa2/poll/backend/rest/VoterGroupRest.java" />
+        <option value="$PROJECT_DIR$/src/main/java/cz/wa2/poll/backend/rest/VoterRest.java" />
       </list>
     </option>
   </component>
@@ -2801,7 +2819,7 @@
       <workItem from="1428753291118" duration="27966000" />
       <workItem from="1428833302752" duration="12471000" />
       <workItem from="1428935135631" duration="8428000" />
-      <workItem from="1429011122591" duration="4120000" />
+      <workItem from="1429011122591" duration="7584000" />
     </task>
     <task id="LOCAL-00001" summary="AS">
       <created>1427976678486</created>
@@ -2893,11 +2911,17 @@
       <option name="project" value="LOCAL" />
       <updated>1429012365955</updated>
     </task>
-    <option name="localTasksCounter" value="16" />
+    <task id="LOCAL-00016" summary="Úprava VoterGroup.">
+      <created>1429015264559</created>
+      <option name="number" value="00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1429015264559</updated>
+    </task>
+    <option name="localTasksCounter" value="17" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="204778000" />
+    <option name="totallyTimeSpent" value="208242000" />
   </component>
   <component name="TodoView" selected-index="0">
     <todo-panel id="selected-file">
@@ -2921,7 +2945,7 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
-    <editor active="false" />
+    <editor active="true" />
     <layout>
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="IDEtalk" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
@@ -2934,7 +2958,7 @@
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="UI Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Debug" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.4345946" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.2345946" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32972974" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32756758" sideWeight="0.5" order="14" side_tool="false" content_ui="tabs" />
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.45837837" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
@@ -2986,18 +3010,11 @@
     <MESSAGE value="Fronta upravena" />
     <MESSAGE value="Přidáno logování." />
     <MESSAGE value="V založení nového hlasování musí být lidé." />
-    <option name="LAST_COMMIT_MESSAGE" value="V založení nového hlasování musí být lidé." />
+    <MESSAGE value="Úprava VoterGroup." />
+    <option name="LAST_COMMIT_MESSAGE" value="Úprava VoterGroup." />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/cz/wa2/poll/backend/rest/BallotRest.java</url>
-          <line>112</line>
-          <properties />
-          <option name="timeStamp" value="92" />
-        </line-breakpoint>
-      </breakpoints>
       <breakpoints-dialog>
         <breakpoints-dialog />
       </breakpoints-dialog>
@@ -3321,14 +3338,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/cz/wa2/poll/backend/rest/BallotRest.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="1025" max-vertical-offset="1904">
-          <caret line="25" column="0" selection-start-line="25" selection-start-column="0" selection-end-line="25" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/cz/wa2/poll/backend/rest/PollRest.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1938">
@@ -3336,14 +3345,6 @@
           <folding>
             <element signature="imports" expanded="false" />
           </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/cz/wa2/poll/backend/dao/VoterDao.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="1174" max-vertical-offset="1615">
-          <caret line="100" column="0" selection-start-line="100" selection-start-column="0" selection-end-line="100" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -3375,14 +3376,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="153" max-vertical-offset="1071">
           <caret line="49" column="9" selection-start-line="49" selection-start-column="9" selection-end-line="49" selection-end-column="9" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/cz/wa2/poll/backend/rest/VoterRest.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="2305" max-vertical-offset="4471">
-          <caret line="178" column="0" selection-start-line="178" selection-start-column="0" selection-end-line="182" selection-end-column="13" />
           <folding />
         </state>
       </provider>
@@ -3437,8 +3430,32 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/cz/wa2/poll/backend/rest/VoterGroupRest.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.7313131" vertical-offset="1780" max-vertical-offset="3400">
-          <caret line="146" column="17" selection-start-line="146" selection-start-column="17" selection-end-line="146" selection-end-column="17" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="862" max-vertical-offset="3400">
+          <caret line="156" column="21" selection-start-line="156" selection-start-column="21" selection-end-line="156" selection-end-column="21" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/cz/wa2/poll/backend/dao/VoterDao.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="454" max-vertical-offset="1615">
+          <caret line="81" column="18" selection-start-line="81" selection-start-column="18" selection-end-line="81" selection-end-column="18" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/cz/wa2/poll/backend/rest/VoterRest.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="2023" max-vertical-offset="4590">
+          <caret line="239" column="58" selection-start-line="239" selection-start-column="58" selection-end-line="239" selection-end-column="58" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/cz/wa2/poll/backend/rest/BallotRest.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.725" vertical-offset="1224" max-vertical-offset="1904">
+          <caret line="112" column="0" selection-start-line="112" selection-start-column="0" selection-end-line="112" selection-end-column="0" />
           <folding />
         </state>
       </provider>
